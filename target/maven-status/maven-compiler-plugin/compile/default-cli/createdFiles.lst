@@ -1,0 +1,6 @@
+org\assignment02\DependecyAnalyserLib\PackageDepsReport.class
+org\assignment02\DependecyAnalyserLib\DependecyAnalyser.class
+org\assignment02\DependecyAnalyserLib\ProjectDepsReport.class
+org\assignment02\DependecyAnalyserLib\ClassDepsReport.class
+org\assignment02\Test\DependecyAnalyserLibTest.class
+org\assignment02\DependecyAnalyserLib\DependecyAnalyserLib.class
