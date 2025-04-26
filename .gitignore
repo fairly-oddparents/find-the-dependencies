@@ -1,6 +1,9 @@
-#IDE data
+# IDE data
 .vscode/
 .idea/
 
-#OS data
+# OS data
 .DS_Store
+
+# Maven
+target/
