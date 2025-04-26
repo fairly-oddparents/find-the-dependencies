@@ -1,11 +1,11 @@
-package org.assignment02.Test;
+package pcd.ass02.test;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.Future;
-import org.assignment02.DependencyAnalyserLib.ClassDepsReport;
-import org.assignment02.DependencyAnalyserLib.DependencyAnalyserLib;
-import org.assignment02.DependencyAnalyserLib.PackageDepsReport;
-import org.assignment02.DependencyAnalyserLib.ProjectDepsReport;
+import pcd.ass02.dependencyAnalyserLib.ClassDepsReport;
+import pcd.ass02.dependencyAnalyserLib.DependencyAnalyserLib;
+import pcd.ass02.dependencyAnalyserLib.PackageDepsReport;
+import pcd.ass02.dependencyAnalyserLib.ProjectDepsReport;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

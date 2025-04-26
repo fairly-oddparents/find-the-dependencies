@@ -1,4 +1,4 @@
-package org.assignment02.DependencyAnalyserLib;
+package pcd.ass02.dependencyAnalyserLib;
 
 import io.vertx.core.*;
 import io.vertx.core.Future;
