@@ -2,7 +2,9 @@ package pcd.ass02.dependencyAnalyserLib;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.Future;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
 import pcd.ass02.dependencyAnalyserLib.reports.ClassDepsReport;
 import pcd.ass02.dependencyAnalyserLib.impl.DependencyAnalyserLibImpl;
 import pcd.ass02.dependencyAnalyserLib.reports.PackageDepsReport;
@@ -12,14 +14,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DependencyAnalyserLibTest {
 
+    private DependencyAnalyserLib analyser;
+    private String path;
+
+    @BeforeEach
+    public void setUp() {
+        Vertx vertx = Vertx.vertx();
+        this.analyser = new DependencyAnalyserLibImpl(vertx);
+        this.path = System.getProperty("user.dir") + "\\src\\main\\java\\pcd\\ass02\\";
+    }
+
     @Test
     public void testGetClassDependencies() {
-        Vertx vertx = Vertx.vertx();
-        DependencyAnalyserLibImpl analyser = new DependencyAnalyserLibImpl(vertx);
-        String path = System.getProperty("user.dir");
-        path = path  + "\\src\\main\\java\\pcd\\ass02\\";
-        String classSrcFile = path + "dependencyAnalyserLib\\reports\\ClassDepsReport.java";
-        Future<ClassDepsReport> future = analyser.getClassDependencies(classSrcFile);
+        String classSrcFile = this.path + "dependencyAnalyserLib\\reports\\ClassDepsReport.java";
+        Future<ClassDepsReport> future = this.analyser.getClassDependencies(classSrcFile);
         future.onComplete(res -> {
             if (res.succeeded()) {
                 assertNotNull(res.result());
@@ -32,12 +40,8 @@ class DependencyAnalyserLibTest {
 
     @Test
     public void testGetPackageDependencies() {
-        Vertx vertx = Vertx.vertx();
-        DependencyAnalyserLibImpl analyser = new DependencyAnalyserLibImpl(vertx);
-        String path = System.getProperty("user.dir");
-        path = path  + "\\src\\main\\java\\pcd\\ass02\\";
-        String packageSrcFolder = path + "dependencyAnalyserLib";
-        Future<PackageDepsReport> future = analyser.getPackageDependencies(packageSrcFolder);
+        String packageSrcFolder = this.path + "dependencyAnalyserLib";
+        Future<PackageDepsReport> future = this.analyser.getPackageDependencies(packageSrcFolder);
         future.onComplete(res -> {
             if (res.succeeded()) {
                 assertNotNull(res.result());
@@ -50,12 +54,8 @@ class DependencyAnalyserLibTest {
 
     @Test
     public void testGetProjectDependencies() {
-        Vertx vertx = Vertx.vertx();
-        DependencyAnalyserLibImpl analyser = new DependencyAnalyserLibImpl(vertx);
-        String path = System.getProperty("user.dir");
-        path = path  + "\\src\\main\\java\\pcd\\ass02\\";
-        String projectSrcFolder = path;
-        Future<ProjectDepsReport> future = analyser.getProjectDependencies(projectSrcFolder);
+        String projectSrcFolder = this.path;
+        Future<ProjectDepsReport> future = this.analyser.getProjectDependencies(projectSrcFolder);
         future.onComplete(res -> {
             if (res.succeeded()) {
                 assertNotNull(res.result());
