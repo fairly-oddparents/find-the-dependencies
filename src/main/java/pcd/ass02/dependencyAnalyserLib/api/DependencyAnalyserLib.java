@@ -12,19 +12,19 @@ public interface DependencyAnalyserLib {
      * @param classSrcFile the class file to analyze
      * @return the class dependencies list
      */
-    public Future<ClassDepsReport> getClassDependencies(String classSrcFile);
+    Future<ClassDepsReport> getClassDependencies(String classSrcFile);
 
     /**
      * Get the dependencies of a package
      * @param packageSrcFolder the path of the package to analyze
      * @return the package dependencies list
      */
-    public Future<PackageDepsReport> getPackageDependencies(String packageSrcFolder);
+    Future<PackageDepsReport> getPackageDependencies(String packageSrcFolder);
 
     /**
      * Get the dependencies of a project
      * @param projectSrcFolder the path of the project to analyze
      * @return the project dependencies list
      */
-    public Future<ProjectDepsReport> getProjectDependencies(String projectSrcFolder);
+    Future<ProjectDepsReport> getProjectDependencies(String projectSrcFolder);
 }
