@@ -96,9 +96,9 @@ public class DependencyAnalyserLib extends AbstractVerticle {
 
     public static void main(String[] args) {
         String path = System.getProperty("user.dir");
-        path = path  + "\\src\\main\\java\\org\\assignment02\\";
-        String classSrcFile = path + "DependencyAnalyserLib\\ClassDepsReport.java";
-        String packageSrcFolder = path + "DependencyAnalyserLib";
+        path = path  + "\\src\\main\\java\\pcd\\ass02\\";
+        String classSrcFile = path + "dependencyAnalyserLib\\ClassDepsReport.java";
+        String packageSrcFolder = path + "dependencyAnalyserLib";
         String projectSrcFolder = path;
         Vertx vertx = Vertx.vertx();
         DependencyAnalyserLib analyser = new DependencyAnalyserLib(vertx);
