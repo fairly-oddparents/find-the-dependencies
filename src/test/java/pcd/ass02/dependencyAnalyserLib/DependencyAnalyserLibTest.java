@@ -10,6 +10,8 @@ import pcd.ass02.dependencyAnalyserLib.impl.DependencyAnalyserLibImpl;
 import pcd.ass02.dependencyAnalyserLib.reports.PackageDepsReport;
 import pcd.ass02.dependencyAnalyserLib.reports.ProjectDepsReport;
 
+import java.io.File;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class DependencyAnalyserLibTest {
@@ -21,12 +23,20 @@ class DependencyAnalyserLibTest {
     public void setUp() {
         Vertx vertx = Vertx.vertx();
         this.analyser = new DependencyAnalyserLibImpl(vertx);
-        this.path = System.getProperty("user.dir") + "\\src\\main\\java\\pcd\\ass02\\";
+        this.path = System.getProperty("user.dir") +
+                File.separator + "src" +
+                File.separator + "main" +
+                File.separator + "java" +
+                File.separator + "pcd" +
+                File.separator + "ass02" +
+                File.separator;
     }
 
     @Test
     public void testGetClassDependencies() {
-        String classSrcFile = this.path + "dependencyAnalyserLib\\reports\\ClassDepsReport.java";
+        String classSrcFile = this.path + "dependencyAnalyserLib" +
+                File.separator + "reports" +
+                File.separator + "ClassDepsReport.java";
         Future<ClassDepsReport> future = this.analyser.getClassDependencies(classSrcFile);
         future.onComplete(res -> {
             if (res.succeeded()) {
