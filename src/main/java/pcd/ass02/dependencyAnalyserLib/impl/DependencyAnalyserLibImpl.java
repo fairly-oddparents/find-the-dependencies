@@ -1,10 +1,14 @@
-package pcd.ass02.dependencyAnalyserLib;
+package pcd.ass02.dependencyAnalyserLib.impl;
 
 import io.vertx.core.*;
 import io.vertx.core.Future;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
+import pcd.ass02.dependencyAnalyserLib.reports.ClassDepsReport;
+import pcd.ass02.dependencyAnalyserLib.reports.PackageDepsReport;
+import pcd.ass02.dependencyAnalyserLib.reports.ProjectDepsReport;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -12,11 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DependencyAnalyserLib extends AbstractVerticle {
+public class DependencyAnalyserLibImpl extends AbstractVerticle implements DependencyAnalyserLib {
 
     private final Vertx vertx;
 
-    public DependencyAnalyserLib(Vertx vertx) {
+    public DependencyAnalyserLibImpl(Vertx vertx) {
         this.vertx = vertx;
     }
 
@@ -26,6 +30,7 @@ public class DependencyAnalyserLib extends AbstractVerticle {
         startPromise.complete();
     }
 
+    @Override
     public Future<ClassDepsReport> getClassDependencies(String classSrcFile) {
         return vertx.executeBlocking(promise -> {
             try {
@@ -44,6 +49,7 @@ public class DependencyAnalyserLib extends AbstractVerticle {
         });
     }
 
+    @Override
     public Future<PackageDepsReport> getPackageDependencies(String packageSrcFolder) {
         return vertx.executeBlocking(promise -> {
             try {
@@ -69,6 +75,7 @@ public class DependencyAnalyserLib extends AbstractVerticle {
         });
     }
 
+    @Override
     public Future<ProjectDepsReport> getProjectDependencies(String projectSrcFolder) {
         return vertx.executeBlocking(promise -> {
             try {
@@ -90,56 +97,6 @@ public class DependencyAnalyserLib extends AbstractVerticle {
                 });
             } catch (Exception e) {
                 promise.fail(e);
-            }
-        });
-    }
-
-    public static void main(String[] args) {
-        String path = System.getProperty("user.dir");
-        path = path  + "\\src\\main\\java\\pcd\\ass02\\";
-        String classSrcFile = path + "dependencyAnalyserLib\\ClassDepsReport.java";
-        String packageSrcFolder = path + "dependencyAnalyserLib";
-        String projectSrcFolder = path;
-        Vertx vertx = Vertx.vertx();
-        DependencyAnalyserLib analyser = new DependencyAnalyserLib(vertx);
-
-        vertx.deployVerticle(analyser, res -> {
-            if (res.succeeded()) {
-                analyser.getClassDependencies(classSrcFile).onComplete(classRes -> {
-                    if (classRes.succeeded()) {
-                        System.out.println("Dependencies of: " + classSrcFile);
-                        System.out.println(" > " + classRes.result().getDependencies());
-                    } else {
-                        System.err.println("Errore: " + classRes.cause());
-                    }
-                });
-                analyser.getPackageDependencies(packageSrcFolder).onComplete(packageRes -> {
-                    if (packageRes.succeeded()) {
-                        System.out.println("Package Dependencies:");
-                        packageRes.result().getClassReports().forEach(classReport -> {
-                            System.out.println("- File: " + classReport.getSourceFileName());
-                            System.out.println("  Dependencies: " + classReport.getDependencies());
-                        });
-                    } else {
-                        System.err.println("Errore nell'analisi del package: " + packageRes.cause());
-                    }
-                });
-                analyser.getProjectDependencies(projectSrcFolder).onComplete(projectRes -> {
-                    if (projectRes.succeeded()) {
-                        System.out.println("Project Dependencies:");
-                        projectRes.result().getPackageReports().forEach(packageReport -> {
-                            System.out.println("- Package: " + packageReport.getPackageName());
-                            packageReport.getClassReports().forEach(classReport -> {
-                                System.out.println("  - File: " + classReport.getSourceFileName());
-                                System.out.println("    Dependencies: " + classReport.getDependencies());
-                            });
-                        });
-                    } else {
-                        System.err.println("Errore nell'analisi del progetto: " + projectRes.cause());
-                    }
-                });
-            } else {
-                System.err.println("Errore nella distribuzione del Vertical: " + res.cause());
             }
         });
     }

@@ -3,10 +3,10 @@ package pcd.ass02.test;
 import io.vertx.core.Vertx;
 import io.vertx.core.Future;
 import org.junit.jupiter.api.Test;
-import pcd.ass02.dependencyAnalyserLib.ClassDepsReport;
-import pcd.ass02.dependencyAnalyserLib.DependencyAnalyserLib;
-import pcd.ass02.dependencyAnalyserLib.PackageDepsReport;
-import pcd.ass02.dependencyAnalyserLib.ProjectDepsReport;
+import pcd.ass02.dependencyAnalyserLib.reports.ClassDepsReport;
+import pcd.ass02.dependencyAnalyserLib.impl.DependencyAnalyserLibImpl;
+import pcd.ass02.dependencyAnalyserLib.reports.PackageDepsReport;
+import pcd.ass02.dependencyAnalyserLib.reports.ProjectDepsReport;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,10 +15,10 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetClassDependencies() {
         Vertx vertx = Vertx.vertx();
-        DependencyAnalyserLib analyser = new DependencyAnalyserLib(vertx);
+        DependencyAnalyserLibImpl analyser = new DependencyAnalyserLibImpl(vertx);
         String path = System.getProperty("user.dir");
         path = path  + "\\src\\main\\java\\pcd\\ass02\\";
-        String classSrcFile = path + "dependencyAnalyserLib\\ClassDepsReport.java";
+        String classSrcFile = path + "dependencyAnalyserLib\\reports\\ClassDepsReport.java";
         Future<ClassDepsReport> future = analyser.getClassDependencies(classSrcFile);
         future.onComplete(res -> {
             if (res.succeeded()) {
@@ -33,7 +33,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetPackageDependencies() {
         Vertx vertx = Vertx.vertx();
-        DependencyAnalyserLib analyser = new DependencyAnalyserLib(vertx);
+        DependencyAnalyserLibImpl analyser = new DependencyAnalyserLibImpl(vertx);
         String path = System.getProperty("user.dir");
         path = path  + "\\src\\main\\java\\pcd\\ass02\\";
         String packageSrcFolder = path + "dependencyAnalyserLib";
@@ -51,7 +51,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetProjectDependencies() {
         Vertx vertx = Vertx.vertx();
-        DependencyAnalyserLib analyser = new DependencyAnalyserLib(vertx);
+        DependencyAnalyserLibImpl analyser = new DependencyAnalyserLibImpl(vertx);
         String path = System.getProperty("user.dir");
         path = path  + "\\src\\main\\java\\pcd\\ass02\\";
         String projectSrcFolder = path;
