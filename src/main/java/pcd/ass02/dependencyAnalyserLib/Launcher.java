@@ -3,15 +3,24 @@ package pcd.ass02.dependencyAnalyserLib;
 import io.vertx.core.Vertx;
 import pcd.ass02.dependencyAnalyserLib.impl.DependencyAnalyserLibImpl;
 
+import java.io.File;
+
 public class Launcher {
     public static void main(String[] args) {
-        String path = System.getProperty("user.dir");
-        path = path  + "\\src\\main\\java\\pcd\\ass02\\";
-        String classSrcFile = path + "dependencyAnalyserLib\\reports\\ClassDepsReport.java";
-        String packageSrcFolder = path + "dependencyAnalyserLib";
-        String projectSrcFolder = path;
         Vertx vertx = Vertx.vertx();
         DependencyAnalyserLibImpl analyser = new DependencyAnalyserLibImpl(vertx);
+        String path = System.getProperty("user.dir") +
+                File.separator + "src" +
+                File.separator + "main" +
+                File.separator + "java" +
+                File.separator + "pcd" +
+                File.separator + "ass02" +
+                File.separator;
+        String classSrcFile = path + "dependencyAnalyserLib" +
+                File.separator + "reports" +
+                File.separator + "ClassDepsReport.java";
+        String packageSrcFolder = path + "dependencyAnalyserLib";
+        String projectSrcFolder = path;
 
         vertx.deployVerticle(analyser, res -> {
             if (res.succeeded()) {
