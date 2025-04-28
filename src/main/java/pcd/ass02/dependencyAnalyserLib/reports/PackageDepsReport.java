@@ -6,7 +6,7 @@ import java.util.List;
  * Classe che rappresenta il report delle dipendenze di un Package
  */
 public class PackageDepsReport {
-    private String packageName = "";
+    private final String packageName;
     private final List<ClassDepsReport> classReports;
 
     /*
@@ -15,7 +15,7 @@ public class PackageDepsReport {
      * @param classReports Lista dei report delle classi
      */
     public PackageDepsReport(String packageSrcFolder, List<ClassDepsReport> classReports) {
-        this.packageName = packageName;
+        this.packageName = packageSrcFolder;
         this.classReports = classReports;
     }
 
