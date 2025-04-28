@@ -2,11 +2,11 @@ package pcd.ass02.test;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.Future;
+import org.junit.jupiter.api.Test;
 import pcd.ass02.dependencyAnalyserLib.ClassDepsReport;
 import pcd.ass02.dependencyAnalyserLib.DependencyAnalyserLib;
 import pcd.ass02.dependencyAnalyserLib.PackageDepsReport;
 import pcd.ass02.dependencyAnalyserLib.ProjectDepsReport;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,8 +17,8 @@ class DependencyAnalyserLibTest {
         Vertx vertx = Vertx.vertx();
         DependencyAnalyserLib analyser = new DependencyAnalyserLib(vertx);
         String path = System.getProperty("user.dir");
-        path = path  + "\\src\\main\\java\\org\\assignment02\\";
-        String classSrcFile = path + "DependencyAnalyserLib\\ClassDepsReport.java";
+        path = path  + "\\src\\main\\java\\pcd\\ass02\\";
+        String classSrcFile = path + "dependencyAnalyserLib\\ClassDepsReport.java";
         Future<ClassDepsReport> future = analyser.getClassDependencies(classSrcFile);
         future.onComplete(res -> {
             if (res.succeeded()) {
@@ -35,8 +35,8 @@ class DependencyAnalyserLibTest {
         Vertx vertx = Vertx.vertx();
         DependencyAnalyserLib analyser = new DependencyAnalyserLib(vertx);
         String path = System.getProperty("user.dir");
-        path = path  + "\\src\\main\\java\\org\\assignment02\\";
-        String packageSrcFolder = path + "DependencyAnalyserLib";
+        path = path  + "\\src\\main\\java\\pcd\\ass02\\";
+        String packageSrcFolder = path + "dependencyAnalyserLib";
         Future<PackageDepsReport> future = analyser.getPackageDependencies(packageSrcFolder);
         future.onComplete(res -> {
             if (res.succeeded()) {
@@ -53,7 +53,7 @@ class DependencyAnalyserLibTest {
         Vertx vertx = Vertx.vertx();
         DependencyAnalyserLib analyser = new DependencyAnalyserLib(vertx);
         String path = System.getProperty("user.dir");
-        path = path  + "\\src\\main\\java\\org\\assignment02\\";
+        path = path  + "\\src\\main\\java\\pcd\\ass02\\";
         String projectSrcFolder = path;
         Future<ProjectDepsReport> future = analyser.getProjectDependencies(projectSrcFolder);
         future.onComplete(res -> {
