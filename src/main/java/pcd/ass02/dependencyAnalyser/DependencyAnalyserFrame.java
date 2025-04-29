@@ -6,6 +6,11 @@ import org.graphstream.graph.implementations.MultiGraph;
 import javax.swing.*;
 import java.awt.*;
 
+import org.graphstream.ui.swing_viewer.SwingViewer;
+import org.graphstream.ui.swing_viewer.ViewPanel;
+import org.graphstream.ui.view.Viewer;
+
+
 public class DependencyAnalyserFrame{
 
     private final JFrame frame;
@@ -47,8 +52,12 @@ public class DependencyAnalyserFrame{
                         "text-background-mode: plain; text-background-color: white; " +
                         "text-padding: 5px, 3px; text-offset: 10px, 10px; }"
         );
-        graph.display();
 
+        SwingViewer viewer = new SwingViewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        viewer.enableAutoLayout();
+        ViewPanel viewPanel = (ViewPanel) viewer.addDefaultView(false);
+
+        frame.add(viewPanel, BorderLayout.CENTER);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -80,10 +89,6 @@ public class DependencyAnalyserFrame{
 
     public void showError(String message) {
         JOptionPane.showMessageDialog(frame, message, "Errore", JOptionPane.ERROR_MESSAGE);
-    }
-
-    public void showCompletion() {
-        JOptionPane.showMessageDialog(frame, "Analisi completata!", "Fine", JOptionPane.INFORMATION_MESSAGE);
     }
 
 }

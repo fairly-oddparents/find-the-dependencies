@@ -63,8 +63,7 @@ public class DependencyAnalyserController {
                             addToGraph(graph, dep);
                             view.updateStats(classCount, dependencyCount);
                         },
-                        err -> view.showError("Errore durante l'analisi: " + err.getMessage()),
-                        view::showCompletion
+                        err -> view.showError("Errore durante l'analisi: " + err.getMessage())
                 );
     }
 
