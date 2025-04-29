@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 
 import io.vertx.core.Vertx;
 import org.graphstream.ui.view.Viewer;
-import pcd.ass02.dependencyAnalyserLib.impl.DependencyAnalyserLibImpl;
+import pcd.ass02.dependencyAnalyserLib.DependencyAnalyserLibImpl;
 
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;

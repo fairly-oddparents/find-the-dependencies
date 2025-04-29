@@ -13,10 +13,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
-import pcd.ass02.dependencyAnalyserLib.reports.ClassDepsReport;
-import pcd.ass02.dependencyAnalyserLib.impl.DependencyAnalyserLibImpl;
-import pcd.ass02.dependencyAnalyserLib.reports.PackageDepsReport;
-import pcd.ass02.dependencyAnalyserLib.reports.ProjectDepsReport;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,9 +1,9 @@
 package pcd.ass02.dependencyAnalyserLib.api;
 
 import io.vertx.core.Future;
-import pcd.ass02.dependencyAnalyserLib.reports.ClassDepsReport;
-import pcd.ass02.dependencyAnalyserLib.reports.PackageDepsReport;
-import pcd.ass02.dependencyAnalyserLib.reports.ProjectDepsReport;
+import pcd.ass02.dependencyAnalyserLib.ClassDepsReport;
+import pcd.ass02.dependencyAnalyserLib.PackageDepsReport;
+import pcd.ass02.dependencyAnalyserLib.ProjectDepsReport;
 
 public interface DependencyAnalyserLib {
 

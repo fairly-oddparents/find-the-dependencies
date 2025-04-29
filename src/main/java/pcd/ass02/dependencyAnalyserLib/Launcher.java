@@ -1,7 +1,6 @@
 package pcd.ass02.dependencyAnalyserLib;
 
 import io.vertx.core.Vertx;
-import pcd.ass02.dependencyAnalyserLib.impl.DependencyAnalyserLibImpl;
 
 import java.io.File;
 

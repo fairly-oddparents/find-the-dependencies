@@ -1,13 +1,10 @@
-package pcd.ass02.dependencyAnalyserLib.impl;
+package pcd.ass02.dependencyAnalyserLib;
 
 import io.vertx.core.*;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
-import pcd.ass02.dependencyAnalyserLib.reports.ClassDepsReport;
-import pcd.ass02.dependencyAnalyserLib.reports.PackageDepsReport;
-import pcd.ass02.dependencyAnalyserLib.reports.ProjectDepsReport;
 
 import java.io.IOException;
 import java.nio.file.Files;
