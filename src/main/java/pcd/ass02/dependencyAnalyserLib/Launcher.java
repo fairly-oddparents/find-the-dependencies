@@ -23,32 +23,15 @@ public class Launcher {
                 System.err.println("Error deploying: " + res.cause());
             } else {
                 analyser.getClassDependencies(classSrcFile)
-                        .onSuccess(report -> {
-                            System.out.println("Class: " + report.getSource());
-                            System.out.println("Dependencies: " + report.getDependencies());
-                        })
+                        .onSuccess(classReport -> System.out.println(classReport.toString()))
                         .onFailure(error -> System.err.println("Error: " + error));
 
                 analyser.getPackageDependencies(packagePath)
-                        .onSuccess(report -> {
-                            System.out.println("Package: " + report.getSource());
-                            report.getDependencies().forEach(classReport -> {
-                                System.out.println("\tFile: " + classReport.getSource());
-                                System.out.println("\tDependencies: " + classReport.getDependencies());
-                            });
-                        })
+                        .onSuccess(packageReport -> System.out.println(packageReport.toString()))
                         .onFailure(error -> System.err.println("Error: " + error));
 
                 analyser.getProjectDependencies(projectPath)
-                        .onSuccess(report -> {
-                            System.out.println("Project: " + report.getSource());
-                            report.getDependencies().forEach(packageReport -> {
-                                packageReport.getDependencies().forEach(classReport -> {
-                                    System.out.println("\tFile: " + classReport.getSource());
-                                    System.out.println("\tDependencies: " + classReport.getDependencies());
-                                });
-                            });
-                        })
+                        .onSuccess(projectReport -> System.out.println(projectReport.toString()))
                         .onFailure(error -> System.err.println("Error: " + error))
                         .onComplete(v -> vertx.close());
             }
