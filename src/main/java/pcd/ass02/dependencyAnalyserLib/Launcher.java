@@ -19,7 +19,6 @@ public class Launcher {
                 File.separator + "reports" +
                 File.separator + "ClassDepsReport.java";
         String packageSrcFolder = path + "dependencyAnalyserLib";
-        String projectSrcFolder = path;
 
         vertx.deployVerticle(analyser, res -> {
             if (res.succeeded()) {
@@ -34,21 +33,21 @@ public class Launcher {
                 analyser.getPackageDependencies(packageSrcFolder).onComplete(packageRes -> {
                     if (packageRes.succeeded()) {
                         System.out.println("Package Dependencies:");
-                        packageRes.result().getClassReports().forEach(classReport -> {
-                            System.out.println("- File: " + classReport.getSourceFileName());
+                        packageRes.result().getDependencies().forEach(classReport -> {
+                            System.out.println("- File: " + classReport.getSource());
                             System.out.println("  Dependencies: " + classReport.getDependencies());
                         });
                     } else {
                         System.err.println("Errore nell'analisi del package: " + packageRes.cause());
                     }
                 });
-                analyser.getProjectDependencies(projectSrcFolder).onComplete(projectRes -> {
+                analyser.getProjectDependencies(path).onComplete(projectRes -> {
                     if (projectRes.succeeded()) {
                         System.out.println("Project Dependencies:");
-                        projectRes.result().getPackageReports().forEach(packageReport -> {
-                            System.out.println("- Package: " + packageReport.getPackageName());
-                            packageReport.getClassReports().forEach(classReport -> {
-                                System.out.println("  - File: " + classReport.getSourceFileName());
+                        projectRes.result().getDependencies().forEach(packageReport -> {
+                            System.out.println("- Package: " + packageReport.getSource());
+                            packageReport.getDependencies().forEach(classReport -> {
+                                System.out.println("  - File: " + classReport.getSource());
                                 System.out.println("    Dependencies: " + classReport.getDependencies());
                             });
                         });

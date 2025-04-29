@@ -73,15 +73,15 @@ public class DependencyAnalyser {
         DependencyAnalyserLibImpl analyser = new DependencyAnalyserLibImpl(vertx);
         analyser.getProjectDependencies(folderPath).onComplete(result -> {
             if (result.succeeded()) {
-                result.result().getPackageReports().forEach(packageReport -> {
-                    String packageName = packageReport.getPackageName();
+                result.result().getDependencies().forEach(packageReport -> {
+                    String packageName = packageReport.getSource();
 
                     if (graph.getNode(packageName) == null) {
                         graph.addNode(packageName).setAttribute("ui.label", packageName);
                     }
 
-                    packageReport.getClassReports().forEach(classReport -> {
-                        String className = Paths.get(classReport.getSourceFileName()).getFileName().toString();
+                    packageReport.getDependencies().forEach(classReport -> {
+                        String className = Paths.get(classReport.getSource()).getFileName().toString();
                         if (graph.getNode(className) == null) {
                             graph.addNode(className).setAttribute("ui.label", className);
                             graph.addEdge(packageName + "-" + className, packageName, className);

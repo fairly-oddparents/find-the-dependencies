@@ -2,7 +2,6 @@ package pcd.ass02.dependencyAnalyserLib;
 
 import io.vertx.core.*;
 import com.github.javaparser.*;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
 
@@ -11,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DependencyAnalyserLibImpl extends AbstractVerticle implements DependencyAnalyserLib {
@@ -28,31 +26,27 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
     }
 
     @Override
-    public Future<ClassDepsReport> getClassDependencies(String classSrcFile) {
-        return vertx.executeBlocking(() -> {
-                String code = new String(Files.readAllBytes(Paths.get(classSrcFile)));
-                CompilationUnit cu = StaticJavaParser.parse(code);
-                List<String> dependencies = cu.findAll(ClassOrInterfaceType.class).stream()
+    public Future<ClassDepsReport> getClassDependencies(String source) {
+        return this.vertx.executeBlocking(() -> {
+            String code = new String(Files.readAllBytes(Paths.get(source)));
+            List<String> dependencies = StaticJavaParser.parse(code).findAll(ClassOrInterfaceType.class).stream()
                     .map(ClassOrInterfaceType::getNameAsString)
                     .distinct()
-                    .collect(Collectors.toList());
-                return new ClassDepsReport(classSrcFile, dependencies);
+                    .toList();
+            return new ClassDepsReport(source, dependencies);
         });
     }
 
     @Override
-    public Future<PackageDepsReport> getPackageDependencies(String packageSrcFolder) {
-        try (Stream<Path> stream = Files.walk(Paths.get(packageSrcFolder))) {
-            List<Future<ClassDepsReport>> classFutures = stream
+    public Future<PackageDepsReport> getPackageDependencies(String source) {
+        try (Stream<Path> pathStream = Files.walk(Paths.get(source))) {
+            List<Future<ClassDepsReport>> classFutures = pathStream
                     .filter(path -> path.toString().endsWith(".java"))
                     .map(path -> getClassDependencies(path.toString()))
-                    .collect(Collectors.toList());
+                    .toList();
             return Future.all(classFutures).compose(allResults -> {
-                List<ClassDepsReport> reports = allResults.result().list()
-                        .stream()
-                        .map(result -> (ClassDepsReport) result)
-                        .collect(Collectors.toList());
-                return Future.succeededFuture(new PackageDepsReport(packageSrcFolder, reports));
+                List<ClassDepsReport> reports = allResults.result().list();
+                return Future.succeededFuture(new PackageDepsReport(source, reports));
             });
         } catch (IOException e) {
             return Future.failedFuture(e);
@@ -60,19 +54,16 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
     }
 
     @Override
-    public Future<ProjectDepsReport> getProjectDependencies(String projectSrcFolder) {
-        try (Stream<Path> stream = Files.walk(Paths.get(projectSrcFolder))) {
-            List<Future<PackageDepsReport>> packageFutures = stream
+    public Future<ProjectDepsReport> getProjectDependencies(String source) {
+        try (Stream<Path> pathStream = Files.walk(Paths.get(source))) {
+            List<Future<PackageDepsReport>> packageFutures = pathStream
                     .filter(Files::isDirectory)
                     .map(path -> getPackageDependencies(path.toString()))
-                    .collect(Collectors.toList());
+                    .toList();
             return Future.all(packageFutures).compose(allResults -> {
-                List<PackageDepsReport> reports = allResults.result().list()
-                        .stream()
-                        .map(result -> (PackageDepsReport) result)
-                        .collect(Collectors.toList());
-                return Future.succeededFuture(new ProjectDepsReport(reports));
-            }).andThen((v) -> vertx.close());
+                List<PackageDepsReport> reports = allResults.result().list();
+                return Future.succeededFuture(new ProjectDepsReport(source, reports));
+            });
         } catch (IOException e) {
             return Future.failedFuture(e);
         }
