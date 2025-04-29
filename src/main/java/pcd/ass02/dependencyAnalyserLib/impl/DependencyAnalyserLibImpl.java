@@ -11,10 +11,12 @@ import pcd.ass02.dependencyAnalyserLib.reports.PackageDepsReport;
 import pcd.ass02.dependencyAnalyserLib.reports.ProjectDepsReport;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DependencyAnalyserLibImpl extends AbstractVerticle implements DependencyAnalyserLib {
 
@@ -54,10 +56,10 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
         return vertx.executeBlocking(promise -> {
             try {
                 List<Future<ClassDepsReport>> classFutures = new ArrayList<>();
-                Files.walk(Paths.get(packageSrcFolder))
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .forEach(classFile -> classFutures.add(getClassDependencies(classFile.toString())));
-
+                try (Stream<Path> stream = Files.walk(Paths.get(packageSrcFolder))) {
+                    stream.filter(path -> path.toString().endsWith(".java"))
+                            .forEach(classFile -> classFutures.add(getClassDependencies(classFile.toString())));
+                }
                 Future.all(classFutures).onComplete(allResults -> {
                     if (allResults.succeeded()) {
                         List<ClassDepsReport> packageDependencies = new ArrayList<>();
@@ -80,10 +82,10 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
         return vertx.executeBlocking(promise -> {
             try {
                 List<Future<PackageDepsReport>> packageFutures = new ArrayList<>();
-                Files.walk(Paths.get(projectSrcFolder))
-                    .filter(Files::isDirectory)
-                    .forEach(packageFolder -> packageFutures.add(getPackageDependencies(packageFolder.toString())));
-
+                try (Stream<Path> stream = Files.walk(Paths.get(projectSrcFolder))) {
+                    stream.filter(Files::isDirectory)
+                            .forEach(packageFolder -> packageFutures.add(getPackageDependencies(packageFolder.toString())));
+                }
                 Future.all(packageFutures).onComplete(allResults -> {
                     if (allResults.succeeded()) {
                         List<PackageDepsReport> projectDependencies = new ArrayList<>();
