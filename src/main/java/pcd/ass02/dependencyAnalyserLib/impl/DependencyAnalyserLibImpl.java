@@ -1,7 +1,6 @@
 package pcd.ass02.dependencyAnalyserLib.impl;
 
 import io.vertx.core.*;
-import io.vertx.core.Future;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
@@ -28,7 +27,6 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
 
     @Override
     public void start(Promise<Void> startPromise) {
-        System.out.println("DependencyAnalyserLib avviato");
         startPromise.complete();
     }
 
@@ -77,9 +75,7 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
                         .map(result -> (PackageDepsReport) result)
                         .collect(Collectors.toList());
                 return Future.succeededFuture(new ProjectDepsReport(reports));
-            }).andThen((v) -> {
-                vertx.close();
-            });
+            }).andThen((v) -> vertx.close());
         } catch (IOException e) {
             return Future.failedFuture(e);
         }
