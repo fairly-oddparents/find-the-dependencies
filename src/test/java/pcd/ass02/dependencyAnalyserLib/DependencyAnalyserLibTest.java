@@ -5,6 +5,7 @@ import io.vertx.core.Future;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
 import pcd.ass02.dependencyAnalyserLib.reports.ClassDepsReport;
@@ -41,6 +42,7 @@ class DependencyAnalyserLibTest {
                 if (res.succeeded()) {
                     assertNotNull(res.result());
                     assertFalse(res.result().getDependencies().isEmpty());
+                    assertEquals(List.of("A"), res.result().getDependencies());
                     this.testResult.complete(null);
                 } else {
                     this.testResult.completeExceptionally(res.cause());
@@ -61,6 +63,12 @@ class DependencyAnalyserLibTest {
                 if (res.succeeded()) {
                     assertNotNull(res.result());
                     assertFalse(res.result().getClassReports().isEmpty());
+                    assertEquals(
+                            List.of(List.of("A")),
+                            res.result().getClassReports().stream()
+                                    .map(ClassDepsReport::getDependencies)
+                                    .toList()
+                    );
                     this.testResult.complete(null);
                 } else {
                     this.testResult.completeExceptionally(res.cause());
@@ -81,6 +89,18 @@ class DependencyAnalyserLibTest {
                 if (res.succeeded()) {
                     assertNotNull(res.result());
                     assertFalse(res.result().getPackageReports().isEmpty());
+                    assertEquals(
+                            List.of(
+                                    List.of(List.of("A"), List.of()),
+                                    List.of(List.of("A")),
+                                    List.of(List.of())
+                            ),
+                            res.result().getPackageReports().stream()
+                                    .map(item -> item.getClassReports().stream()
+                                            .map(ClassDepsReport::getDependencies)
+                                            .toList()
+                                    ).toList()
+                    );
                     this.testResult.complete(null);
                 } else {
                     this.testResult.completeExceptionally(res.cause());
