@@ -53,12 +53,12 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
     public Future<PackageDepsReport> getPackageDependencies(String packageSrcFolder) {
         return vertx.executeBlocking(promise -> {
             try {
-                List<Future> classFutures = new ArrayList<>();
+                List<Future<ClassDepsReport>> classFutures = new ArrayList<>();
                 Files.walk(Paths.get(packageSrcFolder))
                     .filter(path -> path.toString().endsWith(".java"))
                     .forEach(classFile -> classFutures.add(getClassDependencies(classFile.toString())));
 
-                CompositeFuture.all(classFutures).onComplete(allResults -> {
+                Future.all(classFutures).onComplete(allResults -> {
                     if (allResults.succeeded()) {
                         List<ClassDepsReport> packageDependencies = new ArrayList<>();
                         allResults.result().list().forEach(result -> packageDependencies.add((ClassDepsReport) result));
@@ -79,12 +79,12 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
     public Future<ProjectDepsReport> getProjectDependencies(String projectSrcFolder) {
         return vertx.executeBlocking(promise -> {
             try {
-                List<Future> packageFutures = new ArrayList<>();
+                List<Future<PackageDepsReport>> packageFutures = new ArrayList<>();
                 Files.walk(Paths.get(projectSrcFolder))
                     .filter(Files::isDirectory)
                     .forEach(packageFolder -> packageFutures.add(getPackageDependencies(packageFolder.toString())));
 
-                CompositeFuture.all(packageFutures).onComplete(allResults -> {
+                Future.all(packageFutures).onComplete(allResults -> {
                     if (allResults.succeeded()) {
                         List<PackageDepsReport> projectDependencies = new ArrayList<>();
                         allResults.result().list().forEach(result -> projectDependencies.add((PackageDepsReport) result));
