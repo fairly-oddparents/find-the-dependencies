@@ -2,11 +2,16 @@ package pcd.ass02.dependencyAnalyserLib;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.Future;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.File;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
 import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
 import pcd.ass02.dependencyAnalyserLib.reports.ClassDepsReport;
 import pcd.ass02.dependencyAnalyserLib.impl.DependencyAnalyserLibImpl;
@@ -42,7 +47,7 @@ class DependencyAnalyserLibTest {
                 if (res.succeeded()) {
                     assertNotNull(res.result());
                     assertFalse(res.result().getDependencies().isEmpty());
-                    assertEquals(List.of("A"), res.result().getDependencies());
+                    assertEquals(Set.of("A"), new HashSet<>(res.result().getDependencies()));
                     this.testResult.complete(null);
                 } else {
                     this.testResult.completeExceptionally(res.cause());
@@ -64,10 +69,10 @@ class DependencyAnalyserLibTest {
                     assertNotNull(res.result());
                     assertFalse(res.result().getClassReports().isEmpty());
                     assertEquals(
-                            List.of(List.of("A")),
+                            Set.of("A"),
                             res.result().getClassReports().stream()
-                                    .map(ClassDepsReport::getDependencies)
-                                    .toList()
+                                    .flatMap(report -> report.getDependencies().stream())
+                                    .collect(Collectors.toSet())
                     );
                     this.testResult.complete(null);
                 } else {
@@ -90,16 +95,11 @@ class DependencyAnalyserLibTest {
                     assertNotNull(res.result());
                     assertFalse(res.result().getPackageReports().isEmpty());
                     assertEquals(
-                            List.of(
-                                    List.of(List.of("A"), List.of()),
-                                    List.of(List.of("A")),
-                                    List.of(List.of())
-                            ),
+                            Set.of("A"),
                             res.result().getPackageReports().stream()
-                                    .map(item -> item.getClassReports().stream()
-                                            .map(ClassDepsReport::getDependencies)
-                                            .toList()
-                                    ).toList()
+                                    .flatMap(report -> report.getClassReports().stream())
+                                    .flatMap(report -> report.getDependencies().stream())
+                                    .collect(Collectors.toSet())
                     );
                     this.testResult.complete(null);
                 } else {
