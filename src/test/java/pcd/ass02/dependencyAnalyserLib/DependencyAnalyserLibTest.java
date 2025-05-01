@@ -13,10 +13,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
-import pcd.ass02.dependencyAnalyserLib.reports.ClassDepsReport;
-import pcd.ass02.dependencyAnalyserLib.impl.DependencyAnalyserLibImpl;
-import pcd.ass02.dependencyAnalyserLib.reports.PackageDepsReport;
-import pcd.ass02.dependencyAnalyserLib.reports.ProjectDepsReport;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -67,10 +63,10 @@ class DependencyAnalyserLibTest {
             try {
                 if (res.succeeded()) {
                     assertNotNull(res.result());
-                    assertFalse(res.result().getClassReports().isEmpty());
+                    assertFalse(res.result().getDependencies().isEmpty());
                     assertEquals(
                             Set.of("A"),
-                            res.result().getClassReports().stream()
+                            res.result().getDependencies().stream()
                                     .flatMap(report -> report.getDependencies().stream())
                                     .collect(Collectors.toSet())
                     );
@@ -93,11 +89,11 @@ class DependencyAnalyserLibTest {
             try {
                 if (res.succeeded()) {
                     assertNotNull(res.result());
-                    assertFalse(res.result().getPackageReports().isEmpty());
+                    assertFalse(res.result().getDependencies().isEmpty());
                     assertEquals(
                             Set.of("A"),
-                            res.result().getPackageReports().stream()
-                                    .flatMap(report -> report.getClassReports().stream())
+                            res.result().getDependencies().stream()
+                                    .flatMap(report -> report.getDependencies().stream())
                                     .flatMap(report -> report.getDependencies().stream())
                                     .collect(Collectors.toSet())
                     );
