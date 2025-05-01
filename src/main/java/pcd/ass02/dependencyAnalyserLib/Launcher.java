@@ -15,8 +15,8 @@ public class Launcher {
                 File.separator + "resources" +
                 File.separator + "test-project" +
                 File.separator;
-        String packagePath = projectPath + "p2";
-        String classSrcFile = packagePath + File.separator + "B.java";
+        String packagePath = projectPath + "p2" + File.separator ;
+        String classSrcFile = packagePath + "B.java";
 
         vertx.deployVerticle(analyser, res -> {
             if (!res.succeeded()) {

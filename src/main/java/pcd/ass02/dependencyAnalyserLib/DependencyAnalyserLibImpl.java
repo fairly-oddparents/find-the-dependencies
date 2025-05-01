@@ -5,6 +5,7 @@ import com.github.javaparser.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,6 +59,7 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
         try (Stream<Path> pathStream = Files.walk(Paths.get(source))) {
             List<Future<PackageDepsReport>> packageFutures = pathStream
                     .filter(Files::isDirectory)
+                    .filter(path -> !source.equals(path + File.separator))
                     .map(path -> getPackageDependencies(path.toString()))
                     .toList();
             return Future.all(packageFutures).compose(allResults -> {
