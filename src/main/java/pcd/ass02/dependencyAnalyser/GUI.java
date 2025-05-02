@@ -10,9 +10,9 @@ public class GUI {
     public static final int GAP = 10;
     private final JFrame frame;
     private final JTextField folderPathField;
-    private final JButton selectFolderButton, analyzeButton;
     private final JLabel classesLabel, dependenciesLabel;
     private final GraphPanel graphPanel;
+    private Controller controller;
 
     public GUI() {
         this.frame = new JFrame("Dependency Graph Analyzer");
@@ -22,12 +22,26 @@ public class GUI {
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, GAP, GAP));
         this.folderPathField = new JTextField(30);
-        this.selectFolderButton = new JButton("Choose folder");
-        this.analyzeButton = new JButton("Start analysis");
+        JButton selectFolderButton = new JButton("Choose folder");
+        selectFolderButton.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+                this.folderPathField.setText(chooser.getSelectedFile().getAbsolutePath());
+            }
+        });
+        JButton analyzeButton = new JButton("Start analysis");
+        analyzeButton.addActionListener(e -> {
+            if (controller != null) {
+                controller.startAnalysis(this.folderPathField.getText());
+            } else {
+                showError("Controller not correctly set");
+            }
+        });
         topPanel.add(new JLabel("Source Root Folder:"));
         topPanel.add(this.folderPathField);
-        topPanel.add(this.selectFolderButton);
-        topPanel.add(this.analyzeButton);
+        topPanel.add(selectFolderButton);
+        topPanel.add(analyzeButton);
 
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, GAP, GAP));
         this.classesLabel = new JLabel();
@@ -45,21 +59,8 @@ public class GUI {
         this.frame.setVisible(true);
     }
 
-    public JFrame getFrame(){
-        return this.frame;
-    }
-    public JTextField getFolderPathField(){
-        return this.folderPathField;
-    }
-    public JButton getSelectFolderButton(){
-        return this.selectFolderButton;
-    }
-    public JButton getAnalyzeButton() {
-        return this.analyzeButton;
-    }
-
-    public void setFolderPath(String path) {
-        this.folderPathField.setText(path);
+    public void setController(Controller controller) {
+        this.controller = controller;
     }
 
     public void updateStats(int classCount, int dependencyCount) {

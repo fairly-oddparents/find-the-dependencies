@@ -4,6 +4,7 @@ public class Launcher {
     public static void main(String[] args) {
         GUI view = new GUI();
         DependencyAnalyser model = new DependencyAnalyser();
-        new Controller(view, model);
+        Controller controller = new Controller(view, model);
+        view.setController(controller);
     }
 }
