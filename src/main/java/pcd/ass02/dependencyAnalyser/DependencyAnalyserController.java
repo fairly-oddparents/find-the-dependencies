@@ -43,7 +43,7 @@ public class DependencyAnalyserController {
     private void startAnalysis() {
         String folder = view.getFolderPathField().getText().trim();
         if (folder.isEmpty()) {
-            view.showError("Seleziona una cartella prima di avviare l'analisi!");
+            view.showError("Select a folder to analyze");
             return;
         }
 
@@ -63,7 +63,7 @@ public class DependencyAnalyserController {
                             addToGraph(graph, dep);
                             view.updateStats(classCount, dependencyCount);
                         },
-                        err -> view.showError("Errore durante l'analisi: " + err.getMessage())
+                        err -> view.showError("Error during analysis: " + err.getMessage())
                 );
     }
 

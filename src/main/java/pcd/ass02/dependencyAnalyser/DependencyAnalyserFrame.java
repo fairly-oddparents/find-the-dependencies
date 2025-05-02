@@ -29,16 +29,16 @@ public class DependencyAnalyserFrame{
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         folderPathField = new JTextField(30);
-        selectFolderButton = new JButton("Scegli cartella…");
-        analyzeButton = new JButton("Avvia analisi");
+        selectFolderButton = new JButton("Choose folder");
+        analyzeButton = new JButton("Start analysis");
         topPanel.add(new JLabel("Source Root Folder:"));
         topPanel.add(folderPathField);
         topPanel.add(selectFolderButton);
         topPanel.add(analyzeButton);
 
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        classesLabel = new JLabel("Classi: 0");
-        dependenciesLabel = new JLabel("Dipendenze: 0");
+        classesLabel = new JLabel("Classes: 0");
+        dependenciesLabel = new JLabel("Dependencies: 0");
         statsPanel.add(classesLabel, BorderLayout.CENTER);
         statsPanel.add(Box.createHorizontalStrut(20));
         statsPanel.add(dependenciesLabel, BorderLayout.CENTER);
@@ -83,12 +83,12 @@ public class DependencyAnalyserFrame{
     }
 
     public void updateStats(int classCount, int dependencyCount) {
-        classesLabel.setText("Classi: " + classCount);
-        dependenciesLabel.setText("Dipendenze: " + dependencyCount);
+        classesLabel.setText("Classes: " + classCount);
+        dependenciesLabel.setText("Dependencies: " + dependencyCount);
     }
 
     public void showError(String message) {
-        JOptionPane.showMessageDialog(frame, message, "Errore", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(frame, message, "Error: ", JOptionPane.ERROR_MESSAGE);
     }
 
 }
