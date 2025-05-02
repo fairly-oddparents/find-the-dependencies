@@ -9,7 +9,6 @@ public class GUI {
 
     public static final int GAP = 10;
     private final JFrame frame;
-    private final JTextField folderPathField;
     private final JLabel classesLabel, dependenciesLabel;
     private final GraphPanel graphPanel;
     private Controller controller;
@@ -21,25 +20,25 @@ public class GUI {
         this.frame.setLayout(new BorderLayout());
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, GAP, GAP));
-        this.folderPathField = new JTextField(30);
+        JTextField folderPathField = new JTextField(30);
         JButton selectFolderButton = new JButton("Choose folder");
         selectFolderButton.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-                this.folderPathField.setText(chooser.getSelectedFile().getAbsolutePath());
+                folderPathField.setText(chooser.getSelectedFile().getAbsolutePath());
             }
         });
         JButton analyzeButton = new JButton("Start analysis");
         analyzeButton.addActionListener(e -> {
             if (controller != null) {
-                controller.startAnalysis(this.folderPathField.getText());
+                controller.startAnalysis(folderPathField.getText());
             } else {
                 showError("Controller not correctly set");
             }
         });
         topPanel.add(new JLabel("Source Root Folder:"));
-        topPanel.add(this.folderPathField);
+        topPanel.add(folderPathField);
         topPanel.add(selectFolderButton);
         topPanel.add(analyzeButton);
 
