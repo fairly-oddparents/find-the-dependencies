@@ -1,14 +1,8 @@
 package pcd.ass02.dependencyAnalyser;
 
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.MultiGraph;
-
 import javax.swing.*;
 import java.awt.*;
-
-import org.graphstream.ui.swing_viewer.SwingViewer;
-import org.graphstream.ui.swing_viewer.ViewPanel;
-import org.graphstream.ui.view.Viewer;
+import java.util.Set;
 
 
 public class DependencyAnalyserFrame{
@@ -17,7 +11,7 @@ public class DependencyAnalyserFrame{
     private final JTextField folderPathField;
     private final JButton selectFolderButton, analyzeButton;
     private final JLabel classesLabel, dependenciesLabel;
-    private final Graph graph;
+    private final GraphPanel graphPanel;
 
     public DependencyAnalyserFrame() {
         this.frame = new JFrame("Dependency Graph Analyzer");
@@ -38,25 +32,14 @@ public class DependencyAnalyserFrame{
         this.classesLabel = new JLabel();
         this.dependenciesLabel = new JLabel();
         this.updateStats(0, 0);
-
         statsPanel.add(this.classesLabel, BorderLayout.CENTER);
         statsPanel.add(Box.createHorizontalStrut(20));
         statsPanel.add(this.dependenciesLabel, BorderLayout.CENTER);
 
-        System.setProperty("org.graphstream.ui", "swing");
-        graph = new MultiGraph("Dipendenze");
-        graph.setAttribute("ui.stylesheet", "node { text-size: 14px; text-color: black; " +
-                        "text-background-mode: plain; text-background-color: white; " +
-                        "text-padding: 5px, 3px; text-offset: 10px, 10px; }"
-        );
-
-        SwingViewer viewer = new SwingViewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-        viewer.enableAutoLayout();
-        ViewPanel viewPanel = (ViewPanel) viewer.addDefaultView(false);
-
+        this.graphPanel = new GraphPanel();
 
         this.frame.add(topPanel, BorderLayout.NORTH);
-        this.frame.add(viewPanel, BorderLayout.CENTER);
+        this.frame.add(this.graphPanel, BorderLayout.CENTER);
         this.frame.add(statsPanel, BorderLayout.SOUTH);
         this.frame.setLocationRelativeTo(null);
         this.frame.setVisible(true);
@@ -71,11 +54,8 @@ public class DependencyAnalyserFrame{
     public JButton getSelectFolderButton(){
         return this.selectFolderButton;
     }
-    public JButton getAnalyzeButton(){
+    public JButton getAnalyzeButton() {
         return this.analyzeButton;
-    }
-    public Graph getGraph(){
-        return this.graph;
     }
 
     public void setFolderPath(String path) {
@@ -91,4 +71,7 @@ public class DependencyAnalyserFrame{
         JOptionPane.showMessageDialog(frame, message, "Error: ", JOptionPane.ERROR_MESSAGE);
     }
 
+    public void addToGraph(String name, Set<String> dependencies) {
+        this.graphPanel.add(name, dependencies);
+    }
 }

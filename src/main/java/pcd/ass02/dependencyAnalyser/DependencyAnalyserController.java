@@ -2,7 +2,6 @@ package pcd.ass02.dependencyAnalyser;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import org.graphstream.graph.Graph;
 
 import javax.swing.*;
 import java.nio.file.Paths;
@@ -47,11 +46,8 @@ public class DependencyAnalyserController {
             return;
         }
 
-        classCount = 0;
-        dependencyCount = 0;
-        Graph graph = view.getGraph();
-        graph.clear();
-        view.updateStats(classCount, dependencyCount);
+        this.classCount = this.dependencyCount = 0;
+        this.view.updateStats(this.classCount, this.dependencyCount);
 
         Observable.fromIterable(model.getJavaFiles(Paths.get(folder)))
                 .subscribeOn(Schedulers.io())
@@ -60,27 +56,11 @@ public class DependencyAnalyserController {
                 .subscribe(
                         dep -> {
                             classCount++;
-                            addToGraph(graph, dep);
+                            this.view.addToGraph(dep.getName(), dep.getDependencies());
                             view.updateStats(classCount, dependencyCount);
                         },
                         err -> view.showError("Error during analysis: " + err.getMessage())
                 );
     }
 
-    private void addToGraph(Graph graph, ClassDependency dep) {
-        if (graph.getNode(dep.getName()) == null) {
-            graph.addNode(dep.getName())
-                    .setAttribute("ui.label", dep.getName());
-        }
-        for (String d : dep.getDependencies()) {
-            if (graph.getNode(d) == null) {
-                graph.addNode(d).setAttribute("ui.label", d);
-            }
-            String edgeId = dep.getName() + "→" + d;
-            if (graph.getEdge(edgeId) == null) {
-                graph.addEdge(edgeId, dep.getName(), d, true);
-                dependencyCount++;
-            }
-        }
-    }
 }
