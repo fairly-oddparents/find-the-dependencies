@@ -7,6 +7,7 @@ import java.util.Set;
 
 public class GUI {
 
+    public static final int GAP = 10;
     private final JFrame frame;
     private final JTextField folderPathField;
     private final JButton selectFolderButton, analyzeButton;
@@ -19,7 +20,7 @@ public class GUI {
         this.frame.setSize(800, 600);
         this.frame.setLayout(new BorderLayout());
 
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, GAP, GAP));
         this.folderPathField = new JTextField(30);
         this.selectFolderButton = new JButton("Choose folder");
         this.analyzeButton = new JButton("Start analysis");
@@ -28,13 +29,12 @@ public class GUI {
         topPanel.add(this.selectFolderButton);
         topPanel.add(this.analyzeButton);
 
-        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, GAP, GAP));
         this.classesLabel = new JLabel();
         this.dependenciesLabel = new JLabel();
         this.updateStats(0, 0);
-        statsPanel.add(this.classesLabel, BorderLayout.CENTER);
-        statsPanel.add(Box.createHorizontalStrut(20));
-        statsPanel.add(this.dependenciesLabel, BorderLayout.CENTER);
+        statsPanel.add(this.classesLabel);
+        statsPanel.add(this.dependenciesLabel);
 
         this.graphPanel = new GraphPanel();
 
