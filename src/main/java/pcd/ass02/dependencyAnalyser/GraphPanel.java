@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
 
@@ -98,6 +99,57 @@ public class GraphPanel extends JPanel {
         return nodes.values().stream().anyMatch(p -> p.distance(point) < NODE_SIZE) ? getEmptyPoint() : point;
     }
 
+    public void layout() {
+        int iterations = 100;
+        double delta = 20;
+        double w = this.getWidth() - delta, h = this.getHeight() - delta;
+        double area = w * h;
+        double k = Math.sqrt(area / nodes.size());
+        double temp = Math.max(w, h) / 10;
+        double cooling = 0.9;
+        Map<String, Point2D.Double> disp = new HashMap<>();
+        nodes.keySet().forEach(v -> disp.put(v, new Point2D.Double(0,0)));
+
+        for (int it = 0; it < iterations; it++) {
+            disp.values().forEach(d -> { d.x = 0; d.y = 0; });
+            for (String v : nodes.keySet()) { //repulsion
+                Point pv = nodes.get(v);
+                for (String u : nodes.keySet()) if (!v.equals(u)) {
+                    Point pu = nodes.get(u);
+                    double dx = pv.x - pu.x, dy = pv.y - pu.y;
+                    double dist = Math.max(0.01, Math.hypot(dx,dy));
+                    double f = (k*k)/dist;
+                    disp.get(v).x += (dx/dist)*f;
+                    disp.get(v).y += (dy/dist)*f;
+                }
+            }
+            for (String[] e : edges) { //attraction
+                Point p1 = nodes.get(e[0]), p2 = nodes.get(e[1]);
+                double dx = p1.x - p2.x, dy = p1.y - p2.y;
+                double dist = Math.max(0.01, Math.hypot(dx,dy));
+                double f = (dist*dist)/k;
+                double fx = (dx/dist)*f, fy = (dy/dist)*f;
+                disp.get(e[0]).x -= fx; disp.get(e[0]).y -= fy;
+                disp.get(e[1]).x += fx; disp.get(e[1]).y += fy;
+            }
+            for (String v : nodes.keySet()) {
+                Point p = nodes.get(v);
+                Point2D.Double d = disp.get(v);
+                double len = Math.hypot(d.x, d.y);
+                if (len > 0) {
+                    double dx = (d.x/len) * Math.min(len, temp);
+                    double dy = (d.y/len) * Math.min(len, temp);
+                    int nx = (int)Math.max( NODE_SIZE, Math.min(w-NODE_SIZE, p.x + dx ));
+                    int ny = (int)Math.max( NODE_SIZE, Math.min(h-NODE_SIZE, p.y + dy ));
+                    p.setLocation(nx, ny);
+                }
+            }
+            temp *= cooling;
+        }
+        repaint();
+    }
+
+
     public void add(String node, Set<String> dependencies) {
         synchronized (nodes) {
             if (!this.nodes.containsKey(node)) {
@@ -109,6 +161,15 @@ public class GraphPanel extends JPanel {
                 }
                 this.edges.add(new String[]{node, dep});
             }
+        layout();
+        }
+        repaint();
+    }
+
+    public void clear() {
+        synchronized (nodes) {
+            nodes.clear();
+            edges.clear();
         }
         repaint();
     }

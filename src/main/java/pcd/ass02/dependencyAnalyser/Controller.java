@@ -24,14 +24,14 @@ public class Controller {
             view.showError("Select a folder to analyze");
             return;
         }
-
+        this.view.clearGraph();
         this.classCount = this.dependencyCount = 0;
         this.view.updateStats(this.classCount, this.dependencyCount);
 
         Observable.fromIterable(model.getJavaFiles(Paths.get(path)))
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io()) //background thread for the iterable
                 .map(model::parseClassDependencies)
-                .observeOn(Schedulers.computation())
+                .observeOn(Schedulers.single()) //single UI thread-like for subscribers
                 .subscribe(
                         dep -> {
                             classCount++;

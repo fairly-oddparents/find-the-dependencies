@@ -74,4 +74,8 @@ public class GUI {
     public void addToGraph(String name, Set<String> dependencies) {
         this.graphPanel.add(name, dependencies);
     }
+
+    public void clearGraph(){
+        this.graphPanel.clear();
+    }
 }
