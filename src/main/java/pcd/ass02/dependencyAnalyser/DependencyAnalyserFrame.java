@@ -15,36 +15,33 @@ public class DependencyAnalyserFrame{
 
     private final JFrame frame;
     private final JTextField folderPathField;
-    private final JButton selectFolderButton;
-    private final JButton analyzeButton;
-    private final JLabel classesLabel;
-    private final JLabel dependenciesLabel;
+    private final JButton selectFolderButton, analyzeButton;
+    private final JLabel classesLabel, dependenciesLabel;
     private final Graph graph;
 
     public DependencyAnalyserFrame() {
-        frame = new JFrame("Dependency Graph Analyzer");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setLayout(new BorderLayout());
+        this.frame = new JFrame("Dependency Graph Analyzer");
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.frame.setSize(800, 600);
+        this.frame.setLayout(new BorderLayout());
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        folderPathField = new JTextField(30);
-        selectFolderButton = new JButton("Choose folder");
-        analyzeButton = new JButton("Start analysis");
+        this.folderPathField = new JTextField(30);
+        this.selectFolderButton = new JButton("Choose folder");
+        this.analyzeButton = new JButton("Start analysis");
         topPanel.add(new JLabel("Source Root Folder:"));
-        topPanel.add(folderPathField);
-        topPanel.add(selectFolderButton);
-        topPanel.add(analyzeButton);
+        topPanel.add(this.folderPathField);
+        topPanel.add(this.selectFolderButton);
+        topPanel.add(this.analyzeButton);
 
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        classesLabel = new JLabel("Classes: 0");
-        dependenciesLabel = new JLabel("Dependencies: 0");
-        statsPanel.add(classesLabel, BorderLayout.CENTER);
-        statsPanel.add(Box.createHorizontalStrut(20));
-        statsPanel.add(dependenciesLabel, BorderLayout.CENTER);
+        this.classesLabel = new JLabel();
+        this.dependenciesLabel = new JLabel();
+        this.updateStats(0, 0);
 
-        frame.add(topPanel, BorderLayout.NORTH);
-        frame.add(statsPanel, BorderLayout.SOUTH);
+        statsPanel.add(this.classesLabel, BorderLayout.CENTER);
+        statsPanel.add(Box.createHorizontalStrut(20));
+        statsPanel.add(this.dependenciesLabel, BorderLayout.CENTER);
 
         System.setProperty("org.graphstream.ui", "swing");
         graph = new MultiGraph("Dipendenze");
@@ -57,34 +54,37 @@ public class DependencyAnalyserFrame{
         viewer.enableAutoLayout();
         ViewPanel viewPanel = (ViewPanel) viewer.addDefaultView(false);
 
-        frame.add(viewPanel, BorderLayout.CENTER);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+
+        this.frame.add(topPanel, BorderLayout.NORTH);
+        this.frame.add(viewPanel, BorderLayout.CENTER);
+        this.frame.add(statsPanel, BorderLayout.SOUTH);
+        this.frame.setLocationRelativeTo(null);
+        this.frame.setVisible(true);
     }
 
     public JFrame getFrame(){
-        return frame;
+        return this.frame;
     }
     public JTextField getFolderPathField(){
-        return folderPathField;
+        return this.folderPathField;
     }
     public JButton getSelectFolderButton(){
-        return selectFolderButton;
+        return this.selectFolderButton;
     }
     public JButton getAnalyzeButton(){
-        return analyzeButton;
+        return this.analyzeButton;
     }
     public Graph getGraph(){
-        return graph;
+        return this.graph;
     }
 
     public void setFolderPath(String path) {
-        folderPathField.setText(path);
+        this.folderPathField.setText(path);
     }
 
     public void updateStats(int classCount, int dependencyCount) {
-        classesLabel.setText("Classes: " + classCount);
-        dependenciesLabel.setText("Dependencies: " + dependencyCount);
+        this.classesLabel.setText("Classes: " + classCount);
+        this.dependenciesLabel.setText("Dependencies: " + dependencyCount);
     }
 
     public void showError(String message) {
