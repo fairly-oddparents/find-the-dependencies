@@ -29,9 +29,9 @@ public class Controller {
         this.view.updateStats(this.classCount, this.dependencyCount);
 
         Observable.fromIterable(model.getJavaFiles(Paths.get(path)))
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io()) //background thread for the iterable
                 .map(model::parseClassDependencies)
-                .observeOn(Schedulers.computation())
+                .observeOn(Schedulers.single()) //single UI thread-like for subscribers
                 .subscribe(
                         dep -> {
                             classCount++;
