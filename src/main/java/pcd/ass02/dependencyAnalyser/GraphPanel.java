@@ -57,14 +57,16 @@ public class GraphPanel extends JPanel {
                 Point p = entry.getValue();
                 g2.setColor(Color.BLACK);
                 g2.fillOval(p.x - (NODE_SIZE / 2), p.y - (NODE_SIZE / 2), NODE_SIZE, NODE_SIZE);
-                g2.drawString(entry.getKey(), p.x - LABEL_OFFSET, p.y + LABEL_OFFSET);
+                g2.drawString(entry.getKey(), p.x, p.y + LABEL_OFFSET);
             }
         }
     }
 
     private Point getEmptyPoint() {
         Random random = new Random();
-        Point point = new Point(random.nextInt(getWidth()), random.nextInt(getHeight()));
+        int x = random.nextInt(this.getWidth() - (2 * NODE_SIZE)) + NODE_SIZE;
+        int y = random.nextInt(this.getHeight() - (2 * NODE_SIZE) - LABEL_OFFSET) + NODE_SIZE;
+        Point point = new Point(x, y);
         return nodes.values().stream().anyMatch(p -> p.distance(point) < NODE_SIZE) ? getEmptyPoint() : point;
     }
 
