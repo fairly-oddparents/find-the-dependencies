@@ -12,9 +12,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Stream;
 
-public final class DependencyAnalyserLibImpl {
+public final class DependencyAnalyserLib {
 
-    public DependencyAnalyserLibImpl() {
+    public DependencyAnalyserLib() {
     }
 
     /**

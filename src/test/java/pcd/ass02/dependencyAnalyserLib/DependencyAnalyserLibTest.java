@@ -32,7 +32,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetClassDependencies() {
         String classSrcFile = this.path + "p2" + File.separator + "B.java";
-        Future<ClassDepsReport> future = DependencyAnalyserLibImpl.getClassDependencies(classSrcFile);
+        Future<ClassDepsReport> future = DependencyAnalyserLib.getClassDependencies(classSrcFile);
         future.onComplete(res -> {
             try {
                 if (res.succeeded()) {
@@ -53,7 +53,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetPackageDependencies() {
         String packageSrcFolder = this.path + "p2";
-        Future<PackageDepsReport> future = DependencyAnalyserLibImpl.getPackageDependencies(packageSrcFolder);
+        Future<PackageDepsReport> future = DependencyAnalyserLib.getPackageDependencies(packageSrcFolder);
         future.onComplete(res -> {
             try {
                 if (res.succeeded()) {
@@ -79,7 +79,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetProjectDependencies() {
         String projectSrcFolder = this.path;
-        Future<ProjectDepsReport> future = DependencyAnalyserLibImpl.getProjectDependencies(projectSrcFolder);
+        Future<ProjectDepsReport> future = DependencyAnalyserLib.getProjectDependencies(projectSrcFolder);
         future.onComplete(res -> {
             try {
                 if (res.succeeded()) {

@@ -17,15 +17,15 @@ public class Launcher {
         String packagePath = projectPath + "p2" + File.separator ;
         String classSrcFile = packagePath + "B.java";
 
-        DependencyAnalyserLibImpl.getClassDependencies(classSrcFile)
+        DependencyAnalyserLib.getClassDependencies(classSrcFile)
                 .onSuccess(classReport -> System.out.println(classReport.toString()))
                 .onFailure(error -> System.err.println("Error: " + error));
 
-        DependencyAnalyserLibImpl.getPackageDependencies(packagePath)
+        DependencyAnalyserLib.getPackageDependencies(packagePath)
                 .onSuccess(packageReport -> System.out.println(packageReport.toString()))
                 .onFailure(error -> System.err.println("Error: " + error));
 
-        DependencyAnalyserLibImpl.getProjectDependencies(projectPath)
+        DependencyAnalyserLib.getProjectDependencies(projectPath)
                 .onSuccess(projectReport -> System.out.println(projectReport.toString()))
                 .onFailure(error -> System.err.println("Error: " + error))
                 .onComplete(v -> vertx.close());
