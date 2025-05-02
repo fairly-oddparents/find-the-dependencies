@@ -3,6 +3,7 @@ package pcd.ass02.dependencyAnalyser;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.util.*;
 import java.util.List;
 
@@ -39,6 +40,33 @@ public class GraphPanel extends JPanel {
         });
     }
 
+    private Point offsetPoint(Point from, Point to) {
+        double angle = Math.atan2(to.y - from.y, to.x - from.x);
+        return new Point(
+                (int) (to.x - Math.cos(angle) * NODE_SIZE / 2),
+                (int) (to.y - Math.sin(angle) * NODE_SIZE / 2)
+        );
+    }
+
+    private void drawArrow(Graphics2D g2, Point from, Point to) {
+        int dx = to.x - from.x;
+        int dy = to.y - from.y;
+        double angle = Math.atan2(dy, dx);
+        int len = (int) Math.hypot(dx, dy);
+
+        AffineTransform old = g2.getTransform();
+        g2.translate(from.x, from.y);
+        g2.rotate(angle);
+        g2.drawLine(0, 0, len, 0);
+        int arrowSize = 6;
+        g2.fillPolygon(
+                new int[]{len, len - arrowSize, len - arrowSize, len},
+                new int[]{0, -arrowSize, arrowSize, 0},
+                4
+        );
+        g2.setTransform(old);
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -50,7 +78,7 @@ public class GraphPanel extends JPanel {
                 Point p1 = nodes.get(edge[0]);
                 Point p2 = nodes.get(edge[1]);
                 g2.setColor(Color.GRAY);
-                g2.drawLine(p1.x, p1.y, p2.x, p2.y);
+                drawArrow(g2, this.offsetPoint(p1, p2), this.offsetPoint(p2, p1));
             }
 
             for (var entry : nodes.entrySet()) {
