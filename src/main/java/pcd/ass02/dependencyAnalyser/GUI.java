@@ -5,7 +5,7 @@ import java.awt.*;
 import java.util.Set;
 
 
-public class DependencyAnalyserFrame{
+public class GUI {
 
     private final JFrame frame;
     private final JTextField folderPathField;
@@ -13,7 +13,7 @@ public class DependencyAnalyserFrame{
     private final JLabel classesLabel, dependenciesLabel;
     private final GraphPanel graphPanel;
 
-    public DependencyAnalyserFrame() {
+    public GUI() {
         this.frame = new JFrame("Dependency Graph Analyzer");
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setSize(800, 600);

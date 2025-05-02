@@ -6,15 +6,15 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import javax.swing.*;
 import java.nio.file.Paths;
 
-public class DependencyAnalyserController {
+public class Controller {
 
-    private final DependencyAnalyserFrame view;
+    private final GUI view;
     private final DependencyAnalyser model;
 
     private int classCount = 0;
     private int dependencyCount = 0;
 
-    public DependencyAnalyserController(DependencyAnalyserFrame view, DependencyAnalyser model) {
+    public Controller(GUI view, DependencyAnalyser model) {
         this.view  = view;
         this.model = model;
         initView();
