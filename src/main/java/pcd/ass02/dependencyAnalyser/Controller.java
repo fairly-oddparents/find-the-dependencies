@@ -24,7 +24,7 @@ public class Controller {
             view.showError("Select a folder to analyze");
             return;
         }
-
+        this.view.clearGraph();
         this.classCount = this.dependencyCount = 0;
         this.view.updateStats(this.classCount, this.dependencyCount);
 

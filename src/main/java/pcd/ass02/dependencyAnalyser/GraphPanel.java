@@ -113,4 +113,12 @@ public class GraphPanel extends JPanel {
         repaint();
     }
 
+    public void clear() {
+        synchronized (nodes) {
+            nodes.clear();
+            edges.clear();
+        }
+        repaint();
+    }
+
 }
