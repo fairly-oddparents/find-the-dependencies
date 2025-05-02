@@ -1,6 +1,5 @@
 package pcd.ass02.dependencyAnalyserLib;
 
-import io.vertx.core.Vertx;
 import io.vertx.core.Future;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,19 +11,15 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class DependencyAnalyserLibTest {
 
-    private DependencyAnalyserLib analyser;
     private CompletableFuture<Void> testResult;
     private String path;
 
     @BeforeEach
     public void setUp() {
-        this.analyser = new DependencyAnalyserLibImpl(Vertx.vertx());
         this.testResult = new CompletableFuture<>();
         this.path = System.getProperty("user.dir") +
                 File.separator + "src" +
@@ -37,7 +32,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetClassDependencies() {
         String classSrcFile = this.path + "p2" + File.separator + "B.java";
-        Future<ClassDepsReport> future = this.analyser.getClassDependencies(classSrcFile);
+        Future<ClassDepsReport> future = DependencyAnalyserLibImpl.getClassDependencies(classSrcFile);
         future.onComplete(res -> {
             try {
                 if (res.succeeded()) {
@@ -58,7 +53,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetPackageDependencies() {
         String packageSrcFolder = this.path + "p2";
-        Future<PackageDepsReport> future = this.analyser.getPackageDependencies(packageSrcFolder);
+        Future<PackageDepsReport> future = DependencyAnalyserLibImpl.getPackageDependencies(packageSrcFolder);
         future.onComplete(res -> {
             try {
                 if (res.succeeded()) {
@@ -84,7 +79,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetProjectDependencies() {
         String projectSrcFolder = this.path;
-        Future<ProjectDepsReport> future = this.analyser.getProjectDependencies(projectSrcFolder);
+        Future<ProjectDepsReport> future = DependencyAnalyserLibImpl.getProjectDependencies(projectSrcFolder);
         future.onComplete(res -> {
             try {
                 if (res.succeeded()) {

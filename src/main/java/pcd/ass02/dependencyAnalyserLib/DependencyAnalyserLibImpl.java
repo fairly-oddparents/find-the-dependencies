@@ -3,7 +3,6 @@ package pcd.ass02.dependencyAnalyserLib;
 import io.vertx.core.*;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import pcd.ass02.dependencyAnalyserLib.api.DependencyAnalyserLib;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,22 +12,18 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DependencyAnalyserLibImpl extends AbstractVerticle implements DependencyAnalyserLib {
+public final class DependencyAnalyserLibImpl {
 
-    private final Vertx vertx;
-
-    public DependencyAnalyserLibImpl(Vertx vertx) {
-        this.vertx = vertx;
+    public DependencyAnalyserLibImpl() {
     }
 
-    @Override
-    public void start(Promise<Void> startPromise) {
-        startPromise.complete();
-    }
-
-    @Override
-    public Future<ClassDepsReport> getClassDependencies(String source) {
-        return this.vertx.executeBlocking(() -> {
+    /**
+     * Get the dependencies of a class.
+     * @param source the class file to analyze
+     * @return the class dependencies list
+     */
+    public static Future<ClassDepsReport> getClassDependencies(String source) {
+        return Vertx.vertx().executeBlocking(() -> {
             String code = new String(Files.readAllBytes(Paths.get(source)));
             List<String> dependencies = StaticJavaParser.parse(code).findAll(ClassOrInterfaceType.class).stream()
                     .map(ClassOrInterfaceType::getNameAsString)
@@ -38,8 +33,12 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
         });
     }
 
-    @Override
-    public Future<PackageDepsReport> getPackageDependencies(String source) {
+    /**
+     * Get the dependencies of a package.
+     * @param source the path of the package to analyze
+     * @return the package dependencies list
+     */
+    public static Future<PackageDepsReport> getPackageDependencies(String source) {
         try (Stream<Path> pathStream = Files.walk(Paths.get(source))) {
             List<Future<ClassDepsReport>> classFutures = pathStream
                     .filter(path -> path.toString().endsWith(".java"))
@@ -54,8 +53,12 @@ public class DependencyAnalyserLibImpl extends AbstractVerticle implements Depen
         }
     }
 
-    @Override
-    public Future<ProjectDepsReport> getProjectDependencies(String source) {
+    /**
+     * Get the dependencies of a project.
+     * @param source the path of the project to analyze
+     * @return the project dependencies list
+     */
+    public static Future<ProjectDepsReport> getProjectDependencies(String source) {
         try (Stream<Path> pathStream = Files.walk(Paths.get(source))) {
             List<Future<PackageDepsReport>> packageFutures = pathStream
                     .filter(Files::isDirectory)
