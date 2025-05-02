@@ -1,4 +1,4 @@
-package pcd.ass02.dependencyAnalyserLib;
+package pcd.ass02.dependencyAnalyserLib.report;
 
 import java.util.List;
 

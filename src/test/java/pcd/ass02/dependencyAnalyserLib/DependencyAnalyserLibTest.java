@@ -4,6 +4,9 @@ import io.vertx.core.Future;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pcd.ass02.dependencyAnalyserLib.report.ClassDepsReport;
+import pcd.ass02.dependencyAnalyserLib.report.PackageDepsReport;
+import pcd.ass02.dependencyAnalyserLib.report.ProjectDepsReport;
 
 import java.io.File;
 import java.util.HashSet;
