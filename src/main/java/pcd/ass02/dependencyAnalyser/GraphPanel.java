@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GraphPanel extends JPanel {
     public static final int NODE_SIZE = 10;
-    public static final int LABEL_OFFSET = 20;
+    public static final int LABEL_OFFSET = NODE_SIZE + 10;
     private final Map<String, Point> nodes = new HashMap<>();
     private final List<String[]> edges = new ArrayList<>();
     private String dragging = null;
@@ -58,7 +58,7 @@ public class GraphPanel extends JPanel {
         g2.translate(from.x, from.y);
         g2.rotate(angle);
         g2.drawLine(0, 0, len, 0);
-        int arrowSize = 6;
+        int arrowSize = NODE_SIZE / 2;
         g2.fillPolygon(
                 new int[]{len, len - arrowSize, len - arrowSize, len},
                 new int[]{0, -arrowSize, arrowSize, 0},
