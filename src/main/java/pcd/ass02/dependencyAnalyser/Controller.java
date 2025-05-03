@@ -7,6 +7,8 @@ import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Controller {
 
@@ -18,11 +20,12 @@ public class Controller {
 
     private static final int BUFFER_SIZE = 1000;
 
-    private Disposable disposable;
+    private List<Disposable> disposables;
 
     public Controller(GUI view, DependencyAnalyser model) {
         this.view  = view;
         this.model = model;
+        this.disposables = new ArrayList<>();
     }
 
     public void startAnalysis(String folderPath) {
@@ -35,7 +38,7 @@ public class Controller {
         this.classCount = this.dependencyCount = 0;
         this.view.updateStats(this.classCount, this.dependencyCount);
 
-        this.disposable = Flowable.fromIterable(model.getJavaFiles(Paths.get(path)))
+        this.disposables.add(Flowable.fromIterable(model.getJavaFiles(Paths.get(path)))
                 .onBackpressureBuffer(BUFFER_SIZE, () -> {}, BackpressureOverflowStrategy.ERROR)
                 .subscribeOn(Schedulers.io()) //background elastic thread pool for slow blocking operations (Files.walk())
                 .map(model::parseClassDependencies)
@@ -54,11 +57,13 @@ public class Controller {
                                 view.showError(err.getMessage());
                             }
                         }
-                );
+                )
+        );
     }
 
     public void onDestroy() {
-        disposable.dispose();
+        this.disposables.forEach(Disposable::dispose);
+        this.disposables.clear();
     }
 
 }
