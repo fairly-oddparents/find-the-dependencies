@@ -43,6 +43,7 @@ public class Controller {
                 .subscribe(
                         dep -> {
                             classCount++;
+                            dependencyCount += dep.getDependencies().size();
                             this.view.addToGraph(dep.getName(), dep.getDependencies());
                             view.updateStats(classCount, dependencyCount);
                         },
