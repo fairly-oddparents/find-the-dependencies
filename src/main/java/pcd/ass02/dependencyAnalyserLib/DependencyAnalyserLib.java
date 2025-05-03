@@ -17,21 +17,20 @@ import java.util.stream.Stream;
 
 public final class DependencyAnalyserLib {
 
-    public DependencyAnalyserLib() {
-    }
+    public DependencyAnalyserLib() { }
 
     /**
      * Get the dependencies of a class.
      * @param classSrcFile the class file to analyze
      * @return the class dependencies list
      */
-    public static Future<ClassDepsReport> getClassDependencies(String classSrcFile) {
-        return Vertx.vertx().executeBlocking(() -> {
+    public static Future<ClassDepsReport> getClassDependencies(String classSrcFile, Vertx vertx) {
+        return vertx.executeBlocking(() -> {
             String code = new String(Files.readAllBytes(Paths.get(classSrcFile)));
             List<String> dependencies = StaticJavaParser.parse(code).findAll(ClassOrInterfaceType.class).stream()
-                    .map(ClassOrInterfaceType::getNameAsString)
-                    .distinct()
-                    .toList();
+                .map(ClassOrInterfaceType::getNameAsString)
+                .distinct()
+                .toList();
             return new ClassDepsReport(classSrcFile, dependencies);
         });
     }
@@ -41,12 +40,12 @@ public final class DependencyAnalyserLib {
      * @param packageSrcFolder the path of the package to analyze
      * @return the package dependencies list
      */
-    public static Future<PackageDepsReport> getPackageDependencies(String packageSrcFolder) {
+    public static Future<PackageDepsReport> getPackageDependencies(String packageSrcFolder, Vertx vertx) {
         try (Stream<Path> pathStream = Files.walk(Paths.get(packageSrcFolder))) {
             List<Future<ClassDepsReport>> classFutures = pathStream
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .map(path -> getClassDependencies(path.toString()))
-                    .toList();
+                .filter(path -> path.toString().endsWith(".java"))
+                .map(path -> getClassDependencies(path.toString(), vertx))
+                .toList();
             return Future.all(classFutures).compose(allResults -> {
                 List<ClassDepsReport> reports = allResults.result().list();
                 return Future.succeededFuture(new PackageDepsReport(packageSrcFolder, reports));
@@ -61,13 +60,13 @@ public final class DependencyAnalyserLib {
      * @param projectSrcFolder the path of the project to analyze
      * @return the project dependencies list
      */
-    public static Future<ProjectDepsReport> getProjectDependencies(String projectSrcFolder) {
+    public static Future<ProjectDepsReport> getProjectDependencies(String projectSrcFolder, Vertx vertx) {
         try (Stream<Path> pathStream = Files.walk(Paths.get(projectSrcFolder))) {
             List<Future<PackageDepsReport>> packageFutures = pathStream
-                    .filter(Files::isDirectory)
-                    .filter(path -> !projectSrcFolder.equals(path + File.separator))
-                    .map(path -> getPackageDependencies(path.toString()))
-                    .toList();
+                .filter(Files::isDirectory)
+                .filter(path -> !projectSrcFolder.equals(path + File.separator))
+                .map(path -> getPackageDependencies(path.toString(), vertx))
+                .toList();
             return Future.all(packageFutures).compose(allResults -> {
                 List<PackageDepsReport> reports = allResults.result().list();
                 return Future.succeededFuture(new ProjectDepsReport(projectSrcFolder, reports));
