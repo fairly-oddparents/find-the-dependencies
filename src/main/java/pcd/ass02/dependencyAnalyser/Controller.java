@@ -2,6 +2,7 @@ package pcd.ass02.dependencyAnalyser;
 
 import io.reactivex.rxjava3.core.BackpressureOverflowStrategy;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.MissingBackpressureException;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -16,6 +17,8 @@ public class Controller {
     private int dependencyCount = 0;
 
     private static final int BUFFER_SIZE = 1000;
+
+    private Disposable disposable;
 
     public Controller(GUI view, DependencyAnalyser model) {
         this.view  = view;
@@ -32,7 +35,7 @@ public class Controller {
         this.classCount = this.dependencyCount = 0;
         this.view.updateStats(this.classCount, this.dependencyCount);
 
-        Flowable.fromIterable(model.getJavaFiles(Paths.get(path)))
+        this.disposable = Flowable.fromIterable(model.getJavaFiles(Paths.get(path)))
                 .onBackpressureBuffer(BUFFER_SIZE, () -> {}, BackpressureOverflowStrategy.ERROR)
                 .subscribeOn(Schedulers.io()) //background elastic thread pool for slow blocking operations (Files.walk())
                 .map(model::parseClassDependencies)
@@ -51,6 +54,10 @@ public class Controller {
                             }
                         }
                 );
+    }
+
+    public void onDestroy() {
+        disposable.dispose();
     }
 
 }

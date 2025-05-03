@@ -56,6 +56,14 @@ public class GUI {
         this.frame.add(statsPanel, BorderLayout.SOUTH);
         this.frame.setLocationRelativeTo(null);
         this.frame.setVisible(true);
+        this.frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (controller != null) {
+                    controller.onDestroy();
+                }
+            }
+        });
     }
 
     public void setController(Controller controller) {
