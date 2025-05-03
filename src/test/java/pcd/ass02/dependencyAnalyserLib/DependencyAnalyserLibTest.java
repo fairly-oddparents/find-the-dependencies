@@ -2,6 +2,7 @@ package pcd.ass02.dependencyAnalyserLib;
 
 import io.vertx.core.Future;
 
+import io.vertx.core.Vertx;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pcd.ass02.dependencyAnalyserLib.report.ClassDepsReport;
@@ -35,7 +36,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetClassDependencies() {
         String classSrcFile = this.path + "p2" + File.separator + "B.java";
-        Future<ClassDepsReport> future = DependencyAnalyserLib.getClassDependencies(classSrcFile);
+        Future<ClassDepsReport> future = DependencyAnalyserLib.getClassDependencies(classSrcFile, Vertx.vertx());
         future.onComplete(res -> {
             try {
                 if (res.succeeded()) {
@@ -56,7 +57,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetPackageDependencies() {
         String packageSrcFolder = this.path + "p2";
-        Future<PackageDepsReport> future = DependencyAnalyserLib.getPackageDependencies(packageSrcFolder);
+        Future<PackageDepsReport> future = DependencyAnalyserLib.getPackageDependencies(packageSrcFolder, Vertx.vertx());
         future.onComplete(res -> {
             try {
                 if (res.succeeded()) {
@@ -82,7 +83,7 @@ class DependencyAnalyserLibTest {
     @Test
     public void testGetProjectDependencies() {
         String projectSrcFolder = this.path;
-        Future<ProjectDepsReport> future = DependencyAnalyserLib.getProjectDependencies(projectSrcFolder);
+        Future<ProjectDepsReport> future = DependencyAnalyserLib.getProjectDependencies(projectSrcFolder, Vertx.vertx());
         future.onComplete(res -> {
             try {
                 if (res.succeeded()) {
