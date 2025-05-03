@@ -35,19 +35,9 @@ public class DependencyAnalyserVerticle extends AbstractVerticle {
             .onFailure(error ->
                 System.err.println("Error in project dependencies: " + error))
             .onComplete(v -> {
-                vertx.close(ar -> {
-                    if (ar.succeeded()) {
-                        System.out.println("Vert.x closed gracefully.");
-                    } else {
-                        System.err.println("Error during Vert.x shutdown: " + ar.cause());
-                    }
-                });
+                vertx.close();
             });
         startPromise.complete();
     }
 
-    @Override
-    public void stop() {
-        System.out.println("DependencyAnalyserVerticle stopped.");
-    }
 }
