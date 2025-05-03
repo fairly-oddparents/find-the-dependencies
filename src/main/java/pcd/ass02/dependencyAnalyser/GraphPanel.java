@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
 
@@ -133,6 +132,11 @@ public class GraphPanel extends JPanel {
             }
         }
         repaint();
+    }
+
+    public void resetCurrentPosition(){
+        this.currentX = MARGIN;
+        this.currentY = MARGIN;
     }
 
     public void clear() {

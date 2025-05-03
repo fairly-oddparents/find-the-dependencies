@@ -35,6 +35,7 @@ public class Controller {
             return;
         }
         this.view.clearGraph();
+        this.view.resetFirstPosition();
         this.classCount = this.dependencyCount = 0;
         this.view.updateStats(this.classCount, this.dependencyCount);
 

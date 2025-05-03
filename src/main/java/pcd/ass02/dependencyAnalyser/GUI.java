@@ -83,6 +83,10 @@ public class GUI {
         this.graphPanel.add(name, dependencies);
     }
 
+    public void resetFirstPosition(){
+        this.graphPanel.resetCurrentPosition();
+    }
+
     public void clearGraph(){
         this.graphPanel.clear();
     }
