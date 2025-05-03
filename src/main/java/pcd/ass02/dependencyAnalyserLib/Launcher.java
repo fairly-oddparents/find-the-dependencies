@@ -28,6 +28,10 @@ public class Launcher {
         DependencyAnalyserLib.getProjectDependencies(projectPath)
                 .onSuccess(projectReport -> System.out.println(projectReport.toString()))
                 .onFailure(error -> System.err.println("Error: " + error))
-                .onComplete(v -> vertx.close());
+                .onComplete(v -> {
+                    vertx.close(handler -> {
+                        System.exit(0);
+                    });
+                });
     }
 }
