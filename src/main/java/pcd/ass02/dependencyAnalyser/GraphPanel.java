@@ -103,18 +103,22 @@ public class GraphPanel extends JPanel {
     }
 
     private Point nextPosition() {
-        final int xStep = 80;
-        final int yStep = 80;
+        final int xStep = this.getWidth() / 10;
+        final int yStep = this.getHeight() / 10;
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
+        Point p;
         if (this.currentY + yStep > panelHeight - NODE_SIZE) {
             this.currentY = MARGIN;
             this.currentX += xStep;
         }
         if (this.currentX + xStep > panelWidth - NODE_SIZE) {
-            return getEmptyPoint();
+            p = getEmptyPoint();
+            this.currentX = p.x;
+            this.currentY = p.y;
+            return p;
         }
-        Point p = new Point(this.currentX, this.currentY);
+        p = new Point(this.currentX, this.currentY);
         this.currentY += yStep;
         return p;
     }
