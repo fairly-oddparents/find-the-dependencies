@@ -41,6 +41,7 @@ public final class DependencyAnalyserLib {
                 classSrcFile,
                 StaticJavaParser.parse(file.toString()).findAll(ClassOrInterfaceType.class).stream()
                         .map(ClassOrInterfaceType::getNameAsString)
+                        .distinct()
                         .toList()
         ));
     }
