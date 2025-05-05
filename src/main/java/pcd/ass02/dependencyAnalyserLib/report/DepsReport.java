@@ -12,10 +12,6 @@ public class DepsReport<T> {
         this.dependencies = dependencies;
     }
 
-    public String getSource() {
-        return this.source;
-    }
-
     public List<T> getDependencies() {
         return this.dependencies;
     }
@@ -25,10 +21,12 @@ public class DepsReport<T> {
         String indentString = "\t".repeat(indent);
         sb.append(indentString).append("Source: ").append(source).append("\n");
 
-        if (!this.dependencies.isEmpty() && this.dependencies.get(0) instanceof DepsReport<?>) {
+        if (!this.dependencies.isEmpty()) {
             this.dependencies.forEach(dep -> {
-                String toString = ((DepsReport<?>) dep).toString(indent + 1);
-                sb.append(toString);
+                if(dep instanceof DepsReport<?>) {
+                    String toString = ((DepsReport<?>) dep).toString(indent + 1);
+                    sb.append(toString);
+                }
             });
         } else {
             sb.append(indentString).append("Dependencies: ").append(dependencies).append("\n");

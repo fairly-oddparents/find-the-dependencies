@@ -20,7 +20,7 @@ public class Controller {
 
     private static final int BUFFER_SIZE = 1000;
 
-    private List<Disposable> disposables;
+    private final List<Disposable> disposables;
 
     public Controller(GUI view, DependencyAnalyser model) {
         this.view  = view;

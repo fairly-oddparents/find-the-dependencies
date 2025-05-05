@@ -28,11 +28,11 @@ public class DependencyAnalyser {
             JavaParser parser = new JavaParser();
             CompilationUnit cu = parser.parse(javaFile).getResult().orElseThrow();
             String className = cu.getPrimaryTypeName().orElse(javaFile.getFileName().toString());
-            Set<String> deps = cu.findAll(ClassOrInterfaceType.class)
+            Set<String> dependencies= cu.findAll(ClassOrInterfaceType.class)
                     .stream()
                     .map(NodeWithSimpleName::getNameAsString)
                     .collect(Collectors.toSet());
-            return new ClassDependency(className, deps);
+            return new ClassDependency(className, dependencies);
         } catch (IOException e) {
             return new ClassDependency("Unknown", Set.of());
         }

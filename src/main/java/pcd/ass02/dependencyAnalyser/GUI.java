@@ -1,7 +1,11 @@
 package pcd.ass02.dependencyAnalyser;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Set;
 
 
@@ -56,9 +60,9 @@ public class GUI {
         this.frame.add(statsPanel, BorderLayout.SOUTH);
         this.frame.setLocationRelativeTo(null);
         this.frame.setVisible(true);
-        this.frame.addWindowListener(new java.awt.event.WindowAdapter() {
+        this.frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
+            public void windowClosing(WindowEvent e) {
                 if (controller != null) {
                     controller.onDestroy();
                 }

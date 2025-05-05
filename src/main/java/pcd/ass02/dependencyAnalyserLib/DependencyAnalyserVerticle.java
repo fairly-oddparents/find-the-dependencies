@@ -34,9 +34,7 @@ public class DependencyAnalyserVerticle extends AbstractVerticle {
                 System.out.println("Project report: " + projectReport.toString()))
             .onFailure(error ->
                 System.err.println("Error in project dependencies: " + error))
-            .onComplete(v -> {
-                vertx.close();
-            });
+            .onComplete(v -> vertx.close());
         startPromise.complete();
     }
 

@@ -16,10 +16,13 @@ Terenzi Mirco (1193420; mirco.terenzi@studio.unibo.it)
 - [Comportamento del sistema](#comportamento-del-sistema)
 
 ## Analisi del problema
-TODO: A brief analsysis of the problem, focusing in particular aspects that are relevant from concurrent point of view.
+### DependencyAnalyzerLib
+### DependencyAnalyzer
 
 ## Design e Architettura
-TODO: A description of the adopted design, the strategy and architecture.
+### DependencyAnalyzerLib
+### DependencyAnalyzer
 
 ## Comportamento del sistema
-TODO: A description of the behaviour of the system using one or multiple Petri Nets, choosing the proper level of abstraction.
+### DependencyAnalyzerLib
+### DependencyAnalyzer
