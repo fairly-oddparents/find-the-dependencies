@@ -19,19 +19,24 @@ public class DepsReport<T> {
     public String toString(int indent) {
         StringBuilder sb = new StringBuilder();
         String indentString = "\t".repeat(indent);
-        sb.append(indentString).append("Source: ").append(source).append("\n");
-
-        if (!this.dependencies.isEmpty()) {
-            this.dependencies.forEach(dep -> {
-                if(dep instanceof DepsReport<?>) {
-                    String toString = ((DepsReport<?>) dep).toString(indent + 1);
-                    sb.append(toString);
+        sb.append(indentString)
+                .append("Source: ")
+                .append(source)
+                .append("\n")
+                .append(indentString)
+                .append("Dependencies {\n");
+        if (this.dependencies == null || this.dependencies.isEmpty()) {
+            return sb.append(indentString).append("(None)\n").toString();
+        } else {
+            this.dependencies.forEach(dependency -> {
+                if (dependency instanceof DepsReport<?>) {
+                    sb.append(((DepsReport<?>) dependency).toString(indent + 1));
+                } else {
+                    sb.append(indentString).append("\t").append(dependency.toString()).append("\n");
                 }
             });
-        } else {
-            sb.append(indentString).append("Dependencies: ").append(dependencies).append("\n");
         }
-        return sb.toString();
+        return sb.append(indentString).append("}\n").toString();
     }
 
     @Override
