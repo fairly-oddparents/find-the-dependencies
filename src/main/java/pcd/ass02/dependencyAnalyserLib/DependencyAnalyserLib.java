@@ -22,6 +22,7 @@ public final class DependencyAnalyserLib {
     /**
      * Get the dependencies of a class.
      * @param classSrcFile the class file to analyze
+     * @param vertx the Vertx instance
      * @return the class dependencies list
      */
     public static Future<ClassDepsReport> getClassDependencies(String classSrcFile, Vertx vertx) {
@@ -38,6 +39,7 @@ public final class DependencyAnalyserLib {
     /**
      * Get the dependencies of a package.
      * @param packageSrcFolder the path of the package to analyze
+     * @param vertx the Vertx instance
      * @return the package dependencies list
      */
     public static Future<PackageDepsReport> getPackageDependencies(String packageSrcFolder, Vertx vertx) {
@@ -58,6 +60,7 @@ public final class DependencyAnalyserLib {
     /**
      * Get the dependencies of a project.
      * @param projectSrcFolder the path of the project to analyze
+     * @param vertx the Vertx instance
      * @return the project dependencies list
      */
     public static Future<ProjectDepsReport> getProjectDependencies(String projectSrcFolder, Vertx vertx) {
