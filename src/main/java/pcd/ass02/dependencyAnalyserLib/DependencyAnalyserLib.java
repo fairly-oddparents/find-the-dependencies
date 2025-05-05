@@ -53,18 +53,21 @@ public final class DependencyAnalyserLib {
      * @return the package dependencies list
      */
     public static Future<PackageDepsReport> getPackageDependencies(String packageSrcFolder, Vertx vertx) {
-        try (Stream<Path> pathStream = Files.walk(Paths.get(packageSrcFolder))) {
-            List<Future<ClassDepsReport>> classFutures = pathStream
-                .filter(path -> path.toString().endsWith(".java"))
-                .map(path -> getClassDependencies(path.toString(), vertx))
-                .toList();
-            return Future.all(classFutures).compose(allResults -> {
-                List<ClassDepsReport> reports = allResults.result().list();
-                return Future.succeededFuture(new PackageDepsReport(packageSrcFolder, reports));
-            });
-        } catch (IOException e) {
-            return Future.failedFuture(e);
-        }
+        FileSystem fileSystem = vertx.fileSystem();
+        return fileSystem.exists(packageSrcFolder).compose(exists ->
+                exists ? fileSystem.lprops(packageSrcFolder)
+                : Future.failedFuture(new IllegalArgumentException("Path not found"))
+        ).compose(dirProps ->
+                !dirProps.isDirectory() ? Future.failedFuture(new IllegalArgumentException("Path is not a directory"))
+                : fileSystem.readDir(packageSrcFolder)
+        ).compose(files -> Future.all(files.stream()
+                .filter(file -> file.endsWith(".java"))
+                .map(file -> getClassDependencies(file, vertx))
+                .toList()
+        )).compose(composite -> Future.succeededFuture(new PackageDepsReport(
+                packageSrcFolder,
+                composite.result().list()
+        )));
     }
 
     /**
