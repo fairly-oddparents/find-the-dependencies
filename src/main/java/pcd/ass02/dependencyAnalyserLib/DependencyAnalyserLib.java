@@ -3,6 +3,7 @@ package pcd.ass02.dependencyAnalyserLib;
 import io.vertx.core.*;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import io.vertx.core.file.FileSystem;
 import pcd.ass02.dependencyAnalyserLib.report.ClassDepsReport;
 import pcd.ass02.dependencyAnalyserLib.report.PackageDepsReport;
 import pcd.ass02.dependencyAnalyserLib.report.ProjectDepsReport;
@@ -26,14 +27,22 @@ public final class DependencyAnalyserLib {
      * @return the class dependencies list
      */
     public static Future<ClassDepsReport> getClassDependencies(String classSrcFile, Vertx vertx) {
-        return vertx.executeBlocking(() -> {
-            String code = new String(Files.readAllBytes(Paths.get(classSrcFile)));
-            List<String> dependencies = StaticJavaParser.parse(code).findAll(ClassOrInterfaceType.class).stream()
-                .map(ClassOrInterfaceType::getNameAsString)
-                .distinct()
-                .toList();
-            return new ClassDepsReport(classSrcFile, dependencies);
-        });
+        FileSystem fileSystem = vertx.fileSystem();
+        if (!classSrcFile.endsWith(".java")) {
+            throw new IllegalArgumentException("File is not a Java file");
+        }
+        return fileSystem.exists(classSrcFile).compose(exists ->
+                exists ? fileSystem.lprops(classSrcFile)
+                : Future.failedFuture(new IllegalArgumentException("File not found"))
+        ).compose(fileProps ->
+                fileProps.isDirectory() ? Future.failedFuture(new IllegalArgumentException("Path is a directory"))
+                : fileSystem.readFile(classSrcFile)
+        ).map(file -> new ClassDepsReport(
+                classSrcFile,
+                StaticJavaParser.parse(file.toString()).findAll(ClassOrInterfaceType.class).stream()
+                        .map(ClassOrInterfaceType::getNameAsString)
+                        .toList()
+        ));
     }
 
     /**
