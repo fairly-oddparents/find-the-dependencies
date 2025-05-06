@@ -22,6 +22,8 @@ import java.util.stream.Stream;
 
 public final class DependencyAnalyserLib {
 
+    public static final String JAVA_EXTENSION = ".java";
+
     public DependencyAnalyserLib() { }
 
     /**
@@ -32,7 +34,7 @@ public final class DependencyAnalyserLib {
      */
     public static Future<ClassDepsReport> getClassDependencies(String classSrcFile, Vertx vertx) {
         FileSystem fileSystem = vertx.fileSystem();
-        if (!classSrcFile.endsWith(".java")) {
+        if (!classSrcFile.endsWith(JAVA_EXTENSION)) {
             throw new IllegalArgumentException("File is not a Java file");
         }
         return fileSystem.exists(classSrcFile).compose(exists ->
@@ -71,7 +73,7 @@ public final class DependencyAnalyserLib {
                 !dirProps.isDirectory() ? Future.failedFuture(new IllegalArgumentException("Path is not a directory"))
                 : fileSystem.readDir(packageSrcFolder)
         ).compose(files -> Future.all(files.stream()
-                .filter(file -> file.endsWith(".java"))
+                .filter(file -> file.endsWith(JAVA_EXTENSION))
                 .map(file -> getClassDependencies(file, vertx))
                 .toList()
         )).compose(composite -> Future.succeededFuture(new PackageDepsReport(
