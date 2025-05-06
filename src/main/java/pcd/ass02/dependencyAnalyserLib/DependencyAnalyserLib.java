@@ -7,9 +7,11 @@ import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import io.vertx.core.*;
+import io.vertx.core.file.FileSystem;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import io.vertx.core.file.FileSystem;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import pcd.ass02.dependencyAnalyserLib.report.ClassDepsReport;
 import pcd.ass02.dependencyAnalyserLib.report.PackageDepsReport;
 import pcd.ass02.dependencyAnalyserLib.report.ProjectDepsReport;
@@ -157,19 +159,31 @@ public final class DependencyAnalyserLib {
      * @return the project dependencies list
      */
     public static Future<ProjectDepsReport> getProjectDependencies(String projectSrcFolder, Vertx vertx) {
-        try (Stream<Path> pathStream = Files.walk(Paths.get(projectSrcFolder))) {
-            List<Future<PackageDepsReport>> packageFutures = pathStream
-                .filter(Files::isDirectory)
-                .filter(path -> !projectSrcFolder.equals(path + File.separator))
-                .map(path -> getPackageDependencies(path.toString(), vertx))
-                .toList();
-            return Future.all(packageFutures).compose(allResults -> {
-                List<PackageDepsReport> reports = allResults.result().list();
-                return Future.succeededFuture(new ProjectDepsReport(projectSrcFolder, reports));
-            });
-        } catch (IOException e) {
-            return Future.failedFuture(e);
-        }
-    }
+        FileSystem fileSystem = vertx.fileSystem();
+        return fileSystem.exists(projectSrcFolder).compose(exists ->
+                exists ? fileSystem.lprops(projectSrcFolder)
+                : Future.failedFuture(new IllegalArgumentException("Path not found"))
+        ).compose(dirProps ->
+                !dirProps.isDirectory() ? Future.failedFuture(new IllegalArgumentException("Path is not a directory"))
+                : fileSystem.readDir(projectSrcFolder)
+        ).compose(entries -> {
+            List<Future<PackageDepsReport>> packageFutures = new ArrayList<>();
+            List<Future<ProjectDepsReport>> subDirFutures = new ArrayList<>();
+
+            for (String entry : entries) {
+                Path p = Paths.get(entry);
+                if (!Files.isDirectory(p)) continue;
+                try (Stream<Path> files = Files.walk(p, 1)) {
+                    boolean hasJava = files.anyMatch(f -> Files.isRegularFile(f)
+                            && f.toString().endsWith(JAVA_EXTENSION));
+                    if (hasJava) {
+                        packageFutures.add(getPackageDependencies(entry, vertx));
+                    } else {
+                        subDirFutures.add(getProjectDependencies(entry, vertx));
+                    }
+                } catch (IOException e) {
+                    return Future.failedFuture(e);
+                }
+            }
 
 }
