@@ -21,12 +21,10 @@ public class DepsReport<T> {
         String indentString = "\t".repeat(indent);
         sb.append(indentString).append("Source: ").append(source).append("\n");
 
-        if (!this.dependencies.isEmpty()) {
+        if (!this.dependencies.isEmpty() && this.dependencies.get(0) instanceof DepsReport<?>) {
             this.dependencies.forEach(dep -> {
-                if(dep instanceof DepsReport<?>) {
-                    String toString = ((DepsReport<?>) dep).toString(indent + 1);
-                    sb.append(toString);
-                }
+                String toString = ((DepsReport<?>) dep).toString(indent + 1);
+                sb.append(toString);
             });
         } else {
             sb.append(indentString).append("Dependencies: ").append(dependencies).append("\n");
