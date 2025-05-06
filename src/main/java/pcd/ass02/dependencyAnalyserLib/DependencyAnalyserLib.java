@@ -1,5 +1,7 @@
 package pcd.ass02.dependencyAnalyserLib;
 
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import io.vertx.core.*;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
@@ -14,6 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class DependencyAnalyserLib {
@@ -33,18 +37,24 @@ public final class DependencyAnalyserLib {
         }
         return fileSystem.exists(classSrcFile).compose(exists ->
                 exists ? fileSystem.lprops(classSrcFile)
-                : Future.failedFuture(new IllegalArgumentException("File not found"))
+                        : Future.failedFuture(new IllegalArgumentException("File not found"))
         ).compose(fileProps ->
                 fileProps.isDirectory() ? Future.failedFuture(new IllegalArgumentException("Path is a directory"))
-                : fileSystem.readFile(classSrcFile)
-        ).map(file -> new ClassDepsReport(
-                classSrcFile,
-                StaticJavaParser.parse(file.toString()).findAll(ClassOrInterfaceType.class).stream()
-                        .map(ClassOrInterfaceType::getNameAsString)
-                        .distinct()
-                        .toList()
-        ));
+                        : fileSystem.readFile(classSrcFile)
+        ).map(file -> {
+            CompilationUnit cu = StaticJavaParser.parse(file.toString());
+            Set<String> variableNames = cu.findAll(VariableDeclarator.class).stream()
+                    .map(VariableDeclarator::getNameAsString)
+                    .collect(Collectors.toSet());
+            List<String> dependencies = cu.findAll(ClassOrInterfaceType.class).stream()
+                    .map(ClassOrInterfaceType::getNameAsString)
+                    .filter(name -> !variableNames.contains(name))
+                    .distinct()
+                    .toList();
+            return new ClassDepsReport(classSrcFile, dependencies);
+        });
     }
+
 
     /**
      * Get the dependencies of a package.
