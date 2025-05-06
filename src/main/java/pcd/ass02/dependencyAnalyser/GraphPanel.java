@@ -19,6 +19,7 @@ public class GraphPanel extends JPanel {
     private int currentY = MARGIN;
 
     public GraphPanel() {
+        this.setBackground(Color.WHITE);
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 for (var entry : nodes.entrySet()) {
