@@ -10,12 +10,13 @@ public class DependencyAnalyserVerticle extends AbstractVerticle {
     public void start(Promise<Void> startPromise) {
         String projectPath = System.getProperty("user.dir") +
             File.separator + "src" +
-            File.separator + "test" +
-            File.separator + "resources" +
-            File.separator + "test-project" +
+            File.separator + "main" +
+            File.separator + "java" +
+            File.separator + "pcd" +
+            File.separator + "ass02" +
             File.separator;
-        String packagePath = projectPath + "p2" + File.separator;
-        String classSrcFile = packagePath + "B.java";
+        String packagePath = projectPath + "dependencyAnalyser" + File.separator;
+        String classSrcFile = packagePath + "Controller.java";
 
         DependencyAnalyserLib.getClassDependencies(classSrcFile, this.vertx)
             .onSuccess(classReport ->

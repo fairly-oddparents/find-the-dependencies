@@ -1,8 +1,17 @@
 package pcd.ass02.dependencyAnalyserLib;
 
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.resolution.declarations.*;
+import com.github.javaparser.resolution.types.ResolvedType;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import io.vertx.core.*;
 import com.github.javaparser.*;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.CompilationUnit;
 import io.vertx.core.file.FileSystem;
 import pcd.ass02.dependencyAnalyserLib.report.ClassDepsReport;
 import pcd.ass02.dependencyAnalyserLib.report.PackageDepsReport;
@@ -13,10 +22,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 public final class DependencyAnalyserLib {
+
 
     public DependencyAnalyserLib() { }
 
@@ -27,6 +38,13 @@ public final class DependencyAnalyserLib {
      * @return the class dependencies list
      */
     public static Future<ClassDepsReport> getClassDependencies(String classSrcFile, Vertx vertx) {
+        CombinedTypeSolver typeSolver = new CombinedTypeSolver(new ReflectionTypeSolver(false));
+        JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
+        ParserConfiguration config = new ParserConfiguration();
+        config.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21);
+        config.setSymbolResolver(symbolSolver);
+        StaticJavaParser.setConfiguration(config);
+
         FileSystem fileSystem = vertx.fileSystem();
         if (!classSrcFile.endsWith(".java")) {
             throw new IllegalArgumentException("File is not a Java file");
@@ -37,13 +55,52 @@ public final class DependencyAnalyserLib {
         ).compose(fileProps ->
                 fileProps.isDirectory() ? Future.failedFuture(new IllegalArgumentException("Path is a directory"))
                 : fileSystem.readFile(classSrcFile)
-        ).map(file -> new ClassDepsReport(
-                classSrcFile,
-                StaticJavaParser.parse(file.toString()).findAll(ClassOrInterfaceType.class).stream()
-                        .map(ClassOrInterfaceType::getNameAsString)
-                        .distinct()
-                        .toList()
-        ));
+        ).map(file -> {
+            CompilationUnit cu = StaticJavaParser.parse(file.toString());
+            List<String> dependencies = new ArrayList<>();
+
+            // Tipi usati direttamente
+            cu.findAll(ClassOrInterfaceType.class).forEach(type -> {
+                try {
+                    ResolvedType resolved = type.resolve();
+                    if (resolved.isReferenceType()) {
+                        String qualifiedName = resolved.asReferenceType().getQualifiedName();
+                        dependencies.add(qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1));
+                    }
+                } catch (RuntimeException ignored) {}
+            });
+
+            // Chiamate a metodi (anche statici)
+            cu.findAll(MethodCallExpr.class).forEach(expr -> {
+                try {
+                    ResolvedMethodDeclaration method = expr.resolve();
+                    dependencies.add(method.declaringType().getClassName());
+                } catch (RuntimeException ignored) {}
+            });
+
+            // Accessi a campi (statici o meno)
+            cu.findAll(FieldAccessExpr.class).forEach(expr -> {
+                try {
+                    ResolvedValueDeclaration resolved = expr.resolve();
+                    if (resolved instanceof ResolvedFieldDeclaration field) {
+                        dependencies.add(field.declaringType().getClassName());
+                    } else if (resolved instanceof ResolvedEnumConstantDeclaration enumConst) {
+                        String qualifiedName = enumConst.getType().asReferenceType().getQualifiedName();
+                        dependencies.add(qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1));
+                    }
+                } catch (RuntimeException ignored) {}
+            });
+
+            // Istanziazione oggetti con new
+            cu.findAll(ObjectCreationExpr.class).forEach(expr -> {
+                try {
+                    ResolvedConstructorDeclaration constructor = expr.resolve();
+                    dependencies.add(constructor.getClassName());
+                } catch (RuntimeException ignored) {}
+            });
+
+            return new ClassDepsReport(classSrcFile, dependencies.stream().distinct().toList());
+        });
     }
 
     /**
