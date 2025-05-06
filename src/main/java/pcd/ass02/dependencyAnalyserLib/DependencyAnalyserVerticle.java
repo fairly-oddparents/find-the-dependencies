@@ -19,19 +19,19 @@ public class DependencyAnalyserVerticle extends AbstractVerticle {
 
         DependencyAnalyserLib.getClassDependencies(classSrcFile, this.vertx)
             .onSuccess(classReport ->
-                System.out.println("Class report: " + classReport.toString()))
+                System.out.println("[CLASS REPORT]\n: " + classReport.toString()))
             .onFailure(error ->
                 System.err.println("Error in class dependencies: " + error));
 
         DependencyAnalyserLib.getPackageDependencies(packagePath, this.vertx)
             .onSuccess(packageReport ->
-                System.out.println("Package report: " + packageReport.toString()))
+                System.out.println("[PACKAGE REPORT]\n: " + packageReport.toString()))
             .onFailure(error ->
                 System.err.println("Error in package dependencies: " + error));
 
         DependencyAnalyserLib.getProjectDependencies(projectPath, this.vertx)
             .onSuccess(projectReport ->
-                System.out.println("Project report: " + projectReport.toString()))
+                System.out.println("[PROJECT REPORT]\n: " + projectReport.toString()))
             .onFailure(error ->
                 System.err.println("Error in project dependencies: " + error))
             .onComplete(v -> vertx.close());
