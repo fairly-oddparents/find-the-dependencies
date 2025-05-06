@@ -162,10 +162,10 @@ public final class DependencyAnalyserLib {
         FileSystem fileSystem = vertx.fileSystem();
         return fileSystem.exists(projectSrcFolder).compose(exists ->
                 exists ? fileSystem.lprops(projectSrcFolder)
-                : Future.failedFuture(new IllegalArgumentException("Path not found"))
+                        : Future.failedFuture(new IllegalArgumentException("Path not found"))
         ).compose(dirProps ->
                 !dirProps.isDirectory() ? Future.failedFuture(new IllegalArgumentException("Path is not a directory"))
-                : fileSystem.readDir(projectSrcFolder)
+                        : fileSystem.readDir(projectSrcFolder)
         ).compose(entries -> {
             List<Future<PackageDepsReport>> packageFutures = new ArrayList<>();
             List<Future<ProjectDepsReport>> subDirFutures = new ArrayList<>();
@@ -186,4 +186,18 @@ public final class DependencyAnalyserLib {
                 }
             }
 
+            Future<List<PackageDepsReport>> packages = Future.all(packageFutures).map(CompositeFuture::list);
+            Future<List<PackageDepsReport>> nestedPackages = Future
+                    .all(subDirFutures)
+                    .map(cf -> cf.list().stream()
+                            .flatMap(p -> ((ProjectDepsReport) p).getDependencies().stream())
+                            .toList());
+
+            return packages.compose(list -> nestedPackages.map(nested -> {
+                List<PackageDepsReport> all = new ArrayList<>(list);
+                all.addAll(nested);
+                return new ProjectDepsReport(projectSrcFolder, all);
+            }));
+        });
+    }
 }
