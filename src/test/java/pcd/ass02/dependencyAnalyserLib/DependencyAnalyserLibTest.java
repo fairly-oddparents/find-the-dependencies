@@ -1,7 +1,6 @@
 package pcd.ass02.dependencyAnalyserLib;
 
 import io.vertx.core.Future;
-
 import io.vertx.core.Vertx;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,19 +29,24 @@ class DependencyAnalyserLibTest {
                 File.separator + "test" +
                 File.separator + "resources" +
                 File.separator + "test-project" +
-                File.separator;
+                File.separator + "src";
     }
 
     @Test
     public void testGetClassDependencies() {
-        String classSrcFile = this.path + "p2" + File.separator + "B.java";
+        String classSrcFile = this.path
+                + File.separator + "main"
+                + File.separator + "java"
+                + File.separator + "example"
+                + File.separator + "sub"
+                + File.separator + "ClassA.java";
         Future<ClassDepsReport> future = DependencyAnalyserLib.getClassDependencies(classSrcFile, Vertx.vertx());
         future.onComplete(res -> {
             try {
                 if (res.succeeded()) {
                     assertNotNull(res.result());
                     assertFalse(res.result().getDependencies().isEmpty());
-                    assertEquals(Set.of("A"), new HashSet<>(res.result().getDependencies()));
+                    assertEquals(Set.of("ClassB", "Helper"), new HashSet<>(res.result().getDependencies()));
                     this.testResult.complete(null);
                 } else {
                     this.testResult.completeExceptionally(res.cause());
@@ -56,7 +60,11 @@ class DependencyAnalyserLibTest {
 
     @Test
     public void testGetPackageDependencies() {
-        String packageSrcFolder = this.path + "p2";
+        String packageSrcFolder = this.path
+                + File.separator + "main"
+                + File.separator + "java"
+                + File.separator + "example"
+                + File.separator + "sub";
         Future<PackageDepsReport> future = DependencyAnalyserLib.getPackageDependencies(packageSrcFolder, Vertx.vertx());
         future.onComplete(res -> {
             try {
@@ -64,7 +72,7 @@ class DependencyAnalyserLibTest {
                     assertNotNull(res.result());
                     assertFalse(res.result().getDependencies().isEmpty());
                     assertEquals(
-                            Set.of("A"),
+                            Set.of("ClassA", "ClassB", "Helper"),
                             res.result().getDependencies().stream()
                                     .flatMap(report -> report.getDependencies().stream())
                                     .collect(Collectors.toSet())
@@ -90,7 +98,7 @@ class DependencyAnalyserLibTest {
                     assertNotNull(res.result());
                     assertFalse(res.result().getDependencies().isEmpty());
                     assertEquals(
-                            Set.of("A"),
+                            Set.of("ClassA", "ClassB", "ServiceA", "Helper"),
                             res.result().getDependencies().stream()
                                     .flatMap(report -> report.getDependencies().stream())
                                     .flatMap(report -> report.getDependencies().stream())
