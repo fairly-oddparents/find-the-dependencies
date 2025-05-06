@@ -9,30 +9,29 @@ public class DependencyAnalyserVerticle extends AbstractVerticle {
     @Override
     public void start(Promise<Void> startPromise) {
         String projectPath = System.getProperty("user.dir") +
-            File.separator + "src" +
-            File.separator + "main" +
-            File.separator + "java" +
-            File.separator + "pcd" +
-            File.separator + "ass02" +
-            File.separator;
-        String packagePath = projectPath + "dependencyAnalyser" + File.separator;
-        String classSrcFile = packagePath + "Controller.java";
+            File.separator + "src";
+        String packagePath = projectPath + File.separator + "main"
+                + File.separator + "java"
+                + File.separator + "pcd"
+                + File.separator + "ass02"
+                + File.separator + "dependencyAnalyser";
+        String classSrcFile = packagePath + File.separator + "Controller.java";
 
         DependencyAnalyserLib.getClassDependencies(classSrcFile, this.vertx)
             .onSuccess(classReport ->
-                System.out.println("Class report: " + classReport.toString()))
+                System.out.println("[CLASS REPORT]:\n" + classReport.toString()))
             .onFailure(error ->
                 System.err.println("Error in class dependencies: " + error));
 
         DependencyAnalyserLib.getPackageDependencies(packagePath, this.vertx)
             .onSuccess(packageReport ->
-                System.out.println("Package report: " + packageReport.toString()))
+                System.out.println("[PACKAGE REPORT]:\n" + packageReport.toString()))
             .onFailure(error ->
                 System.err.println("Error in package dependencies: " + error));
 
         DependencyAnalyserLib.getProjectDependencies(projectPath, this.vertx)
             .onSuccess(projectReport ->
-                System.out.println("Project report: " + projectReport.toString()))
+                System.out.println("[PROJECT REPORT]:\n " + projectReport.toString()))
             .onFailure(error ->
                 System.err.println("Error in project dependencies: " + error))
             .onComplete(v -> vertx.close());

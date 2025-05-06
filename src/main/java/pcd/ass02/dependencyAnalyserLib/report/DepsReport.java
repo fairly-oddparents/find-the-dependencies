@@ -25,9 +25,7 @@ public class DepsReport<T> {
                 .append("\n")
                 .append(indentString)
                 .append("Dependencies {\n");
-        if (this.dependencies == null || this.dependencies.isEmpty()) {
-            return sb.append(indentString).append("(None)\n").toString();
-        } else {
+        if (this.dependencies != null && !this.dependencies.isEmpty()) {
             this.dependencies.forEach(dependency -> {
                 if (dependency instanceof DepsReport<?>) {
                     sb.append(((DepsReport<?>) dependency).toString(indent + 1));
