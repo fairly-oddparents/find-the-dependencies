@@ -2,12 +2,7 @@ package pcd.ass02.dependencyAnalyser;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
-import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import pcd.ass02.dependencyAnalyserLib.DependencyAnalyserLib;
 
 import java.io.IOException;
@@ -30,19 +25,7 @@ public class DependencyAnalyser {
     }
 
     public ClassDependency parseClassDependencies(Path javaFile) {
-        Path sourceRoot = DependencyAnalyserLib.findSourceRoot(javaFile);
-        if (sourceRoot == null) {
-            throw new IllegalArgumentException("Cannot locate 'java' folder in the path");
-        }
-
-        CombinedTypeSolver solver = new CombinedTypeSolver(
-                new ReflectionTypeSolver(false),
-                new JavaParserTypeSolver(sourceRoot.toFile())
-        );
-        ParserConfiguration config = new ParserConfiguration()
-                .setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21)
-                .setSymbolResolver(new JavaSymbolSolver(solver));
-        JavaParser parser = new JavaParser(config);
+        JavaParser parser = DependencyAnalyserLib.getJavaParser(javaFile.toString());
 
         try {
             String fileContent = Files.readString(javaFile);

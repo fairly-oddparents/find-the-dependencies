@@ -36,21 +36,7 @@ public final class DependencyAnalyserLib {
      * @return the class dependencies list
      */
     public static Future<ClassDepsReport> getClassDependencies(String classSrcFile, Vertx vertx) {
-        Path sourceRoot = findSourceRoot(Paths.get(classSrcFile));
-        if (sourceRoot == null) {
-            throw new IllegalArgumentException("Cannot locate 'java' folder in the path");
-        }
-
-        CombinedTypeSolver solver = new CombinedTypeSolver(
-                new ReflectionTypeSolver(false),
-                new JavaParserTypeSolver(sourceRoot.toFile())
-        );
-
-        ParserConfiguration config = new ParserConfiguration()
-                .setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21)
-                .setSymbolResolver(new JavaSymbolSolver(solver));
-        JavaParser parser = new JavaParser(config);
-
+        JavaParser parser = getJavaParser(classSrcFile);
         FileSystem fileSystem = vertx.fileSystem();
         if (!classSrcFile.endsWith(FILE_EXTENSION)) {
             throw new IllegalArgumentException("Not a Java file");
@@ -67,6 +53,24 @@ public final class DependencyAnalyserLib {
             List<String> deps = collectDependencies(cu, Paths.get(classSrcFile));
             return new ClassDepsReport(classSrcFile, deps);
         });
+    }
+
+    public static JavaParser getJavaParser(String classSrcFile) {
+        Path sourceRoot = findSourceRoot(Paths.get(classSrcFile));
+        if (sourceRoot == null) {
+            throw new IllegalArgumentException("Cannot locate 'java' folder in the path");
+        }
+
+        CombinedTypeSolver solver = new CombinedTypeSolver(
+                new ReflectionTypeSolver(false),
+                new JavaParserTypeSolver(sourceRoot.toFile())
+        );
+
+        ParserConfiguration config = new ParserConfiguration()
+                .setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21)
+                .setSymbolResolver(new JavaSymbolSolver(solver));
+
+        return new JavaParser(config);
     }
 
     public static Path findSourceRoot(Path path) {
