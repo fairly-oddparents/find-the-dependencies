@@ -1,19 +1,19 @@
 package pcd.ass02.dependencyAnalyserLib;
 
 import io.vertx.core.*;
+import io.vertx.core.file.FileSystem;
+import com.github.javaparser.*;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.resolution.declarations.*;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
-import io.vertx.core.file.FileSystem;
-import com.github.javaparser.*;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import pcd.ass02.dependencyAnalyserLib.report.ClassDepsReport;
-import com.github.javaparser.ast.CompilationUnit;
 import pcd.ass02.dependencyAnalyserLib.report.PackageDepsReport;
 import pcd.ass02.dependencyAnalyserLib.report.ProjectDepsReport;
 
@@ -35,7 +35,7 @@ public final class DependencyAnalyserLib {
      * Get the dependencies of a class.
      *
      * @param classSrcFile the class file to analyze
-     * @param vertx        the Vertx instance
+     * @param vertx the Vertx instance
      * @return the class dependencies list
      */
     public static Future<ClassDepsReport> getClassDependencies(String classSrcFile, Vertx vertx) {
