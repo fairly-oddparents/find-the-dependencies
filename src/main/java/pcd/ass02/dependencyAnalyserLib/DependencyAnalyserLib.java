@@ -136,44 +136,43 @@ public final class DependencyAnalyserLib {
      */
     public static Future<ProjectDepsReport> getProjectDependencies(String projectSrcFolder, Vertx vertx) {
         FileSystem fileSystem = vertx.fileSystem();
-        return fileSystem.exists(projectSrcFolder).compose(exists ->
-                exists ? fileSystem.lprops(projectSrcFolder)
-                        : Future.failedFuture(new IllegalArgumentException("Path not found"))
-        ).compose(dirProps ->
-                !dirProps.isDirectory() ? Future.failedFuture(new IllegalArgumentException("Path is not a directory"))
-                        : fileSystem.readDir(projectSrcFolder)
-        ).compose(entries -> {
-            List<Future<PackageDepsReport>> packageFutures = new ArrayList<>();
-            List<Future<ProjectDepsReport>> subDirFutures = new ArrayList<>();
+        return fileSystem.exists(projectSrcFolder).compose(exists -> exists
+                ? fileSystem.lprops(projectSrcFolder)
+                : Future.failedFuture("Path not found")
+        ).compose(props -> props.isDirectory()
+                ? scanForPackages(projectSrcFolder, vertx)
+                : Future.failedFuture("Path is not a directory")
+        ).compose(packageFolders -> {
+            List<Future<PackageDepsReport>> packageDeps = packageFolders.stream()
+                    .map(folder -> getPackageDependencies(folder, vertx))
+                    .toList();
+            return Future.all(packageDeps).map(cf ->
+                    new ProjectDepsReport(projectSrcFolder, cf.list())
+            );
+        });
+    }
+
+    private static Future<List<String>> scanForPackages(String dir, Vertx vertx) {
+        FileSystem fileSystem = vertx.fileSystem();
+        return fileSystem.readDir(dir).compose(entries -> {
+            List<Future<List<String>>> subCalls = new ArrayList<>();
+            boolean hasJava = entries.stream().anyMatch(f -> f.endsWith(JAVA_EXTENSION));
 
             for (String entry : entries) {
-                Path p = Paths.get(entry);
-                if (!Files.isDirectory(p)) continue;
-                try (Stream<Path> files = Files.walk(p, 1)) {
-                    boolean hasJava = files.anyMatch(f -> Files.isRegularFile(f)
-                            && f.toString().endsWith(JAVA_EXTENSION));
-                    if (hasJava) {
-                        packageFutures.add(getPackageDependencies(entry, vertx));
-                    } else {
-                        subDirFutures.add(getProjectDependencies(entry, vertx));
-                    }
-                } catch (IOException e) {
-                    return Future.failedFuture(e);
-                }
+                subCalls.add(fileSystem.lprops(entry).compose(props ->
+                        props.isDirectory() ? scanForPackages(entry, vertx)
+                                : Future.succeededFuture(List.of())
+                ));
             }
 
-            Future<List<PackageDepsReport>> packages = Future.all(packageFutures).map(CompositeFuture::list);
-            Future<List<PackageDepsReport>> nestedPackages = Future
-                    .all(subDirFutures)
-                    .map(cf -> cf.list().stream()
-                            .flatMap(p -> ((ProjectDepsReport) p).getDependencies().stream())
-                            .toList());
-
-            return packages.compose(list -> nestedPackages.map(nested -> {
-                List<PackageDepsReport> all = new ArrayList<>(list);
-                all.addAll(nested);
-                return new ProjectDepsReport(projectSrcFolder, all);
-            }));
+            return Future.all(subCalls).map(cf -> {
+                List<String> result = new ArrayList<>();
+                if (hasJava) result.add(dir);
+                for (int i = 0; i < cf.size(); i++) {
+                    result.addAll(cf.resultAt(i));
+                }
+                return result;
+            });
         });
     }
 }
