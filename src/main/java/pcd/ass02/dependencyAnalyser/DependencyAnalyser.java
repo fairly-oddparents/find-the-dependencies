@@ -1,8 +1,8 @@
 package pcd.ass02.dependencyAnalyser;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ParserConfiguration;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -12,15 +12,19 @@ import com.github.javaparser.resolution.declarations.*;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static pcd.ass02.dependencyAnalyserLib.DependencyAnalyserLib.SRC_FOLDER;
 
 public class DependencyAnalyser {
     public Set<Path> getJavaFiles(Path root) {
@@ -33,15 +37,25 @@ public class DependencyAnalyser {
         }
     }
 
-    public ClassDependency parseClassDependencies(Path javaFile) { //TODO: fix
-        CombinedTypeSolver typeSolver = new CombinedTypeSolver(new ReflectionTypeSolver(false));
-        JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
-        ParserConfiguration config = new ParserConfiguration();
-        config.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21);
-        config.setSymbolResolver(symbolSolver);
-        StaticJavaParser.setConfiguration(config);
+    public ClassDependency parseClassDependencies(Path javaFile) {
+        Path sourceRoot = findSourceRoot(javaFile);
+        if (sourceRoot == null) {
+            throw new IllegalArgumentException("Cannot locate 'java' folder in the path");
+        }
+
+        CombinedTypeSolver solver = new CombinedTypeSolver(
+                new ReflectionTypeSolver(false),
+                new JavaParserTypeSolver(sourceRoot.toFile())
+        );
+        ParserConfiguration config = new ParserConfiguration()
+                .setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21)
+                .setSymbolResolver(new JavaSymbolSolver(solver));
+        JavaParser parser = new JavaParser(config);
+
         try {
-            CompilationUnit cu = StaticJavaParser.parse(javaFile.toString());
+            String fileContent = Files.readString(javaFile);
+            CompilationUnit cu = parser.parse(fileContent).getResult()
+                    .orElseThrow(() -> new RuntimeException("Parsing failed"));
             String className = cu.getPrimaryTypeName().orElse(javaFile.getFileName().toString());
             Set<String> dependencies = new HashSet<>();
 
@@ -90,7 +104,16 @@ public class DependencyAnalyser {
         } catch (ParseProblemException e) {
             System.out.println("Error parsing file: " + javaFile + ", " + e.getMessage());
             return null;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
+    }
+
+    private static Path findSourceRoot(Path path) {
+        while (path != null && !path.getFileName().toString().equals(SRC_FOLDER)) {
+            path = path.getParent();
+        }
+        return path;
     }
 }
