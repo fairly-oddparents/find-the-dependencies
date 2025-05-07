@@ -96,7 +96,7 @@ public final class DependencyAnalyserLib {
         cu.findAll(ObjectCreationExpr.class).forEach(e -> tryResolve(() ->
                 deps.add(e.resolve().declaringType().getQualifiedName())));
 
-        return deps.stream().distinct().toList();
+        return deps.stream().distinct().sorted().toList();
     }
 
     private static void tryResolve(Runnable r) {
