@@ -50,7 +50,7 @@ public class DependencyAnalyser {
                     .orElseThrow(() -> new RuntimeException("Parsing failed"));
             String className = cu.getPrimaryTypeName().orElse(javaFile.getFileName().toString());
             Set<String> dependencies = new HashSet<>();
-            DependencyAnalyserLib.collectDependencies(cu).forEach(dep ->
+            DependencyAnalyserLib.collectDependencies(cu, javaFile).forEach(dep ->
                     dependencies.add(dep.substring(dep.lastIndexOf('.') + 1))
             );
             return new ClassDependency(className, dependencies);

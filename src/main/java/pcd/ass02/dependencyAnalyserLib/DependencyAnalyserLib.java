@@ -64,7 +64,7 @@ public final class DependencyAnalyserLib {
         ).map(file -> {
             CompilationUnit cu = parser.parse(file.toString()).getResult()
                     .orElseThrow(() -> new RuntimeException("Parsing failed"));
-            List<String> deps = collectDependencies(cu);
+            List<String> deps = collectDependencies(cu, Paths.get(classSrcFile));
             return new ClassDepsReport(classSrcFile, deps);
         });
     }
@@ -76,8 +76,16 @@ public final class DependencyAnalyserLib {
         return path;
     }
 
-    public static List<String> collectDependencies(CompilationUnit cu) {
+    public static List<String> collectDependencies(CompilationUnit cu, Path sourceFilePath) {
         List<String> deps = new ArrayList<>();
+
+        String packageName = cu.getPackageDeclaration()
+                .map(pd -> pd.getName().toString())
+                .orElse("");
+        String className = sourceFilePath.getFileName().toString().replace(".java", "");
+        String fullyQualifiedClassName = packageName.isEmpty()
+                ? className
+                : packageName + "." + className;
 
         cu.findAll(ClassOrInterfaceType.class).forEach(t -> tryResolve(() ->
                 deps.add(t.resolve().asReferenceType().getQualifiedName())));
@@ -96,7 +104,9 @@ public final class DependencyAnalyserLib {
         cu.findAll(ObjectCreationExpr.class).forEach(e -> tryResolve(() ->
                 deps.add(e.resolve().declaringType().getQualifiedName())));
 
-        return deps.stream().distinct().sorted().toList();
+        return deps.stream()
+                .filter(dep -> !dep.equals(fullyQualifiedClassName))
+                .distinct().sorted().toList();
     }
 
     private static void tryResolve(Runnable r) {
