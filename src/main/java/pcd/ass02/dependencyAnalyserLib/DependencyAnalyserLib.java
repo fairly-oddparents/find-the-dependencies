@@ -9,99 +9,98 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.resolution.declarations.*;
-import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import pcd.ass02.dependencyAnalyserLib.report.ClassDepsReport;
 import pcd.ass02.dependencyAnalyserLib.report.PackageDepsReport;
 import pcd.ass02.dependencyAnalyserLib.report.ProjectDepsReport;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public final class DependencyAnalyserLib {
 
-    public static final String JAVA_EXTENSION = ".java";
+    public static final String FILE_EXTENSION = ".java";
+    public static final String SRC_FOLDER = "java";
 
     public DependencyAnalyserLib() { }
 
     /**
      * Get the dependencies of a class.
-     *
      * @param classSrcFile the class file to analyze
      * @param vertx the Vertx instance
      * @return the class dependencies list
      */
     public static Future<ClassDepsReport> getClassDependencies(String classSrcFile, Vertx vertx) {
-        CombinedTypeSolver typeSolver = new CombinedTypeSolver(new ReflectionTypeSolver(false));
-        JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
-        ParserConfiguration config = new ParserConfiguration();
-        config.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21);
-        config.setSymbolResolver(symbolSolver);
-        StaticJavaParser.setConfiguration(config);
+        Path sourceRoot = findSourceRoot(Paths.get(classSrcFile));
+        if (sourceRoot == null) {
+            throw new IllegalArgumentException("Cannot locate 'java' folder in the path");
+        }
+
+        CombinedTypeSolver solver = new CombinedTypeSolver(
+                new ReflectionTypeSolver(false),
+                new JavaParserTypeSolver(sourceRoot.toFile())
+        );
+
+        ParserConfiguration config = new ParserConfiguration()
+                .setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21)
+                .setSymbolResolver(new JavaSymbolSolver(solver));
+        JavaParser parser = new JavaParser(config);
 
         FileSystem fileSystem = vertx.fileSystem();
-        if (!classSrcFile.endsWith(JAVA_EXTENSION)) {
-            throw new IllegalArgumentException("File is not a Java file");
+        if (!classSrcFile.endsWith(FILE_EXTENSION)) {
+            throw new IllegalArgumentException("Not a Java file");
         }
+
         return fileSystem.exists(classSrcFile).compose(exists ->
-                exists ? fileSystem.lprops(classSrcFile)
-                : Future.failedFuture(new IllegalArgumentException("File not found"))
-        ).compose(fileProps ->
-                fileProps.isDirectory() ? Future.failedFuture(new IllegalArgumentException("Path is a directory"))
+                exists ? fileSystem.lprops(classSrcFile) : Future.failedFuture("File not found")
+        ).compose(props -> props.isDirectory()
+                ? Future.failedFuture("Path is a directory")
                 : fileSystem.readFile(classSrcFile)
         ).map(file -> {
-            CompilationUnit cu = StaticJavaParser.parse(file.toString());
-            List<String> dependencies = new ArrayList<>();
-
-            // Tipi usati direttamente
-            cu.findAll(ClassOrInterfaceType.class).forEach(type -> {
-                try {
-                    ResolvedType resolved = type.resolve();
-                    if (resolved.isReferenceType()) {
-                        String qualifiedName = resolved.asReferenceType().getQualifiedName();
-                        dependencies.add(qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1));
-                    }
-                } catch (RuntimeException ignored) {}
-            });
-
-            // Chiamate a metodi (anche statici)
-            cu.findAll(MethodCallExpr.class).forEach(expr -> {
-                try {
-                    ResolvedMethodDeclaration method = expr.resolve();
-                    dependencies.add(method.declaringType().getClassName());
-                } catch (RuntimeException ignored) {}
-            });
-
-            // Accessi a campi (statici o meno)
-            cu.findAll(FieldAccessExpr.class).forEach(expr -> {
-                try {
-                    ResolvedValueDeclaration resolved = expr.resolve();
-                    if (resolved instanceof ResolvedFieldDeclaration field) {
-                        dependencies.add(field.declaringType().getClassName());
-                    } else if (resolved instanceof ResolvedEnumConstantDeclaration enumConst) {
-                        String qualifiedName = enumConst.getType().asReferenceType().getQualifiedName();
-                        dependencies.add(qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1));
-                    }
-                } catch (RuntimeException ignored) {}
-            });
-
-            // Istanziazione oggetti con new
-            cu.findAll(ObjectCreationExpr.class).forEach(expr -> {
-                try {
-                    ResolvedConstructorDeclaration constructor = expr.resolve();
-                    dependencies.add(constructor.getClassName());
-                } catch (RuntimeException ignored) {}
-            });
-
-            return new ClassDepsReport(classSrcFile, dependencies.stream().distinct().toList());
+            CompilationUnit cu = parser.parse(file.toString()).getResult()
+                    .orElseThrow(() -> new RuntimeException("Parsing failed"));
+            List<String> deps = collectDependencies(cu);
+            return new ClassDepsReport(classSrcFile, deps);
         });
+    }
+
+    private static Path findSourceRoot(Path path) {
+        while (path != null && !path.getFileName().toString().equals(SRC_FOLDER)) {
+            path = path.getParent();
+        }
+        return path;
+    }
+
+    private static List<String> collectDependencies(CompilationUnit cu) {
+        List<String> deps = new ArrayList<>();
+
+        cu.findAll(ClassOrInterfaceType.class).forEach(t -> tryResolve(() ->
+                deps.add(t.resolve().asReferenceType().getQualifiedName())));
+
+        cu.findAll(MethodCallExpr.class).forEach(e -> tryResolve(() ->
+                deps.add(e.resolve().declaringType().getQualifiedName())));
+
+        cu.findAll(FieldAccessExpr.class).forEach(e -> tryResolve(() -> {
+            ResolvedValueDeclaration r = e.resolve();
+            if (r instanceof ResolvedFieldDeclaration f)
+                deps.add(f.declaringType().getQualifiedName());
+            else if (r instanceof ResolvedEnumConstantDeclaration en)
+                deps.add(en.getType().asReferenceType().getQualifiedName());
+        }));
+
+        cu.findAll(ObjectCreationExpr.class).forEach(e -> tryResolve(() ->
+                deps.add(e.resolve().declaringType().getQualifiedName())));
+
+        return deps.stream().distinct().toList();
+    }
+
+    private static void tryResolve(Runnable r) {
+        try { r.run(); } catch (RuntimeException ignored) {}
     }
 
     /**
@@ -119,7 +118,7 @@ public final class DependencyAnalyserLib {
                 !dirProps.isDirectory() ? Future.failedFuture(new IllegalArgumentException("Path is not a directory"))
                 : fileSystem.readDir(packageSrcFolder)
         ).compose(files -> Future.all(files.stream()
-                .filter(file -> file.endsWith(JAVA_EXTENSION))
+                .filter(file -> file.endsWith(FILE_EXTENSION))
                 .map(file -> getClassDependencies(file, vertx))
                 .toList()
         )).compose(composite -> Future.succeededFuture(new PackageDepsReport(
@@ -156,7 +155,7 @@ public final class DependencyAnalyserLib {
         FileSystem fileSystem = vertx.fileSystem();
         return fileSystem.readDir(dir).compose(entries -> {
             List<Future<List<String>>> subCalls = new ArrayList<>();
-            boolean hasJava = entries.stream().anyMatch(f -> f.endsWith(JAVA_EXTENSION));
+            boolean hasJava = entries.stream().anyMatch(f -> f.endsWith(FILE_EXTENSION));
 
             for (String entry : entries) {
                 subCalls.add(fileSystem.lprops(entry).compose(props ->
