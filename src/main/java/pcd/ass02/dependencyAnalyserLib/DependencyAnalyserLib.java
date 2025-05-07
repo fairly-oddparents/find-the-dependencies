@@ -69,14 +69,14 @@ public final class DependencyAnalyserLib {
         });
     }
 
-    private static Path findSourceRoot(Path path) {
+    public static Path findSourceRoot(Path path) {
         while (path != null && !path.getFileName().toString().equals(SRC_FOLDER)) {
             path = path.getParent();
         }
         return path;
     }
 
-    private static List<String> collectDependencies(CompilationUnit cu) {
+    public static List<String> collectDependencies(CompilationUnit cu) {
         List<String> deps = new ArrayList<>();
 
         cu.findAll(ClassOrInterfaceType.class).forEach(t -> tryResolve(() ->
