@@ -46,7 +46,7 @@ class DependencyAnalyserLibTest {
                 if (res.succeeded()) {
                     assertNotNull(res.result());
                     assertFalse(res.result().getDependencies().isEmpty());
-                    assertEquals(Set.of("ClassB", "Helper"), new HashSet<>(res.result().getDependencies()));
+                    assertEquals(Set.of("example.sub.ClassB", "example.utils.Helper"), new HashSet<>(res.result().getDependencies()));
                     this.testResult.complete(null);
                 } else {
                     this.testResult.completeExceptionally(res.cause());
@@ -72,7 +72,7 @@ class DependencyAnalyserLibTest {
                     assertNotNull(res.result());
                     assertFalse(res.result().getDependencies().isEmpty());
                     assertEquals(
-                            Set.of("ClassA", "ClassB", "Helper"),
+                            Set.of("example.sub.ClassA", "example.sub.ClassB", "example.utils.Helper"),
                             res.result().getDependencies().stream()
                                     .flatMap(report -> report.getDependencies().stream())
                                     .collect(Collectors.toSet())
@@ -98,7 +98,15 @@ class DependencyAnalyserLibTest {
                     assertNotNull(res.result());
                     assertFalse(res.result().getDependencies().isEmpty());
                     assertEquals(
-                            Set.of("ClassA", "ClassB", "ServiceA", "Helper"),
+                            Set.of(
+                                    "example.sub.ClassA",
+                                    "example.sub.ClassB",
+                                    "example.sub.ServiceA",
+                                    "example.utils.Helper",
+                                    "java.io.PrintStream",
+                                    "java.lang.System",
+                                    "java.lang.String"
+                            ),
                             res.result().getDependencies().stream()
                                     .flatMap(report -> report.getDependencies().stream())
                                     .flatMap(report -> report.getDependencies().stream())
