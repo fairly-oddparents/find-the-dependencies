@@ -1,4 +1,4 @@
-package pcd.ass02.dependencyAnalyser;
+package pcd.ass02.reactive;
 
 import javax.swing.*;
 import java.awt.*;

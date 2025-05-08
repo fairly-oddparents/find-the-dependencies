@@ -1,4 +1,4 @@
-package pcd.ass02.dependencyAnalyserLib;
+package pcd.ass02.asynchronous;
 
 import io.vertx.core.*;
 import io.vertx.core.file.FileSystem;
@@ -13,9 +13,9 @@ import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
-import pcd.ass02.dependencyAnalyserLib.report.ClassDepsReport;
-import pcd.ass02.dependencyAnalyserLib.report.PackageDepsReport;
-import pcd.ass02.dependencyAnalyserLib.report.ProjectDepsReport;
+import pcd.ass02.asynchronous.report.ClassDepsReport;
+import pcd.ass02.asynchronous.report.PackageDepsReport;
+import pcd.ass02.asynchronous.report.ProjectDepsReport;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

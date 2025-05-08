@@ -1,9 +1,9 @@
-package pcd.ass02.dependencyAnalyser;
+package pcd.ass02.reactive;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
-import pcd.ass02.dependencyAnalyserLib.DependencyAnalyserLib;
+import pcd.ass02.asynchronous.DependencyAnalyserLib;
 
 import java.io.IOException;
 import java.nio.file.Files;

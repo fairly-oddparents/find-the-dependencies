@@ -1,12 +1,12 @@
-package pcd.ass02.dependencyAnalyserLib;
+package pcd.ass02.asynchronous;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pcd.ass02.dependencyAnalyserLib.report.ClassDepsReport;
-import pcd.ass02.dependencyAnalyserLib.report.PackageDepsReport;
-import pcd.ass02.dependencyAnalyserLib.report.ProjectDepsReport;
+import pcd.ass02.asynchronous.report.ClassDepsReport;
+import pcd.ass02.asynchronous.report.PackageDepsReport;
+import pcd.ass02.asynchronous.report.ProjectDepsReport;
 
 import java.io.File;
 import java.util.HashSet;

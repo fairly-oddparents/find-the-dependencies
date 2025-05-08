@@ -1,4 +1,4 @@
-package pcd.ass02.dependencyAnalyserLib;
+package pcd.ass02.asynchronous;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -21,7 +21,7 @@ public class Launcher {
                         + File.separator + "java"
                         + File.separator + "pcd"
                         + File.separator + "ass02"
-                        + File.separator + "dependencyAnalyser";
+                        + File.separator + "reactive";
                 String classSrcFile = packagePath
                         + File.separator + "Controller.java";
 
