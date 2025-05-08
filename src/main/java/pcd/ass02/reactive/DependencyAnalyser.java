@@ -31,15 +31,18 @@ public class DependencyAnalyser {
             String fileContent = Files.readString(javaFile);
             CompilationUnit cu = parser.parse(fileContent).getResult()
                     .orElseThrow(() -> new RuntimeException("Parsing failed"));
-            String fileName = javaFile.getFileName().toString();
-            String className = cu.getPrimaryTypeName().orElse(
-                    fileName.endsWith(".java") ? fileName.substring(0, fileName.length() - ".java".length()) : fileName
-            );
-
             Set<String> dependencies = new HashSet<>();
-            DependencyAnalyserLib.collectDependencies(cu, javaFile).forEach(dep ->
-                    dependencies.add(dep.substring(dep.lastIndexOf('.') + 1))
-            );
+            String className = "";
+            if(javaFile.getFileName() != null) {
+                String fileName = javaFile.getFileName().toString();
+                className = cu.getPrimaryTypeName().orElse(
+                        fileName.endsWith(".java") ? fileName.substring(0, fileName.length() - ".java".length()) : fileName
+                );
+
+                DependencyAnalyserLib.collectDependencies(cu, javaFile).forEach(dep ->
+                        dependencies.add(dep.substring(dep.lastIndexOf('.') + 1))
+                );
+            }
             return new ClassDependency(className, dependencies);
 
         } catch (ParseProblemException e) {

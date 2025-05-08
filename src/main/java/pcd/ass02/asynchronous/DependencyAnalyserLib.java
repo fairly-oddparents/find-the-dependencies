@@ -74,7 +74,7 @@ public final class DependencyAnalyserLib {
     }
 
     public static Path findSourceRoot(Path path) {
-        while (path != null && !path.getFileName().toString().equals(SRC_FOLDER)) {
+        while (path != null && path.getFileName() != null && !path.getFileName().toString().equals(SRC_FOLDER)) {
             path = path.getParent();
         }
         return path;
