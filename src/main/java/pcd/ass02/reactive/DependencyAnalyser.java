@@ -3,7 +3,7 @@ package pcd.ass02.reactive;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
-import pcd.ass02.asynchronous.DependencyAnalyserLib;
+import pcd.ass02.PathHelper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,7 +25,7 @@ public class DependencyAnalyser {
     }
 
     public ClassDependency parseClassDependencies(Path javaFile) {
-        JavaParser parser = DependencyAnalyserLib.getJavaParser(javaFile.toString());
+        JavaParser parser = PathHelper.getJavaParser(javaFile.toString());
 
         try {
             String fileContent = Files.readString(javaFile);
@@ -39,7 +39,7 @@ public class DependencyAnalyser {
                         fileName.endsWith(".java") ? fileName.substring(0, fileName.length() - ".java".length()) : fileName
                 );
 
-                DependencyAnalyserLib.collectDependencies(cu, javaFile).forEach(dep ->
+                PathHelper.collectDependencies(cu, javaFile).forEach(dep ->
                         dependencies.add(dep.substring(dep.lastIndexOf('.') + 1))
                 );
             }
