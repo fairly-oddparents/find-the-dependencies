@@ -25,6 +25,11 @@ public final class PathHelper {
     public static final String FILE_EXTENSION = ".java";
     public static final String SRC_FOLDER = "java";
 
+    /**
+     * Get the JavaParser instance with the correct configuration.
+     * @param classSrcFile the class file to analyze
+     * @return the JavaParser instance
+     */
     public static JavaParser getJavaParser(String classSrcFile) {
         Path sourceRoot = findSourceRoot(Paths.get(classSrcFile));
         if (sourceRoot == null) {
@@ -50,6 +55,12 @@ public final class PathHelper {
         return path;
     }
 
+    /**
+     * Collect the dependencies of a class.
+     * @param cu the compilation unit
+     * @param sourceFilePath the path of the source file
+     * @return the list of dependencies
+     */
     public static List<String> collectDependencies(CompilationUnit cu, Path sourceFilePath) {
         List<String> deps = new ArrayList<>();
 
