@@ -1,28 +1,27 @@
-# Find the Dependencies!
+# Find the Dependencies! 🔎
+![GUI](docs/images/project-gui.png)
+The repository contains the second assignment of the [Concurrent and Distributed Programming course](https://www.unibo.it/en/study/course-units-transferable-skills-moocs/course-unit-catalogue/course-unit/2024/412598) (Master's Degree in CSE @ Unibo).
 
-The assignment includes two points, the first about asynchronous programming and the second about reactive programming.
-1) Develop a `DependecyAnalyserLib` asynchronous library providing asynchronous methods to analyse the dependencies in a Java project, tracking what are the types (interfaces/classes) and related packages that are used/accessed by any interface/class/package belonging to the project. In particular, the signatures of the async methods should correspond to the following pseudocode definitions:
-    - `getClassDependencies(classSrcFile)` asynchronously  producing a result of type `ClassDepsReport`, including the list of types (classes or interfaces) used or accessed in this class;
-    - `getPackageDependencies(packageSrcFolder)` asynchronously  producing a result of type `PackageDepsReport`, including the list of all types (classes or interfaces) used or accessed by any class or interface in this package;
-    - `getProjectDependencies(projectSrcFolder)` asynchronously producing a result of type `ProjectDepsReport`, including the list of types (classes or interfaces) used or accessed by any class or interface belonging to any package in this project.
+The project involves designing and developing a library for analyzing class/interface dependencies in a Java codebase, in two different version: based on asynchronous programming (event-loop based) and on reactive programming (GUI-based for visual exploration).
 
-   Further notes:
-    - The library and testing program should be based on asynchronous programming based on event-loops. Different programming languages can be used. In Java, the suggested framework to be used is [Vert.x](https://vertx.io/), while in Javascript is [Node.js](https://node.js).
-    - [JavaParser](https://javaparser.org/) is the suggested library that can be used for parsing individual Java source files and build the AST.
-    - Besides the library, a program testing each async method should be included.
+This project consists of two independent parts: an asynchronous library for dependency analysis and a reactive GUI for visualizing dependencies.
 
-2) Develop a GUI-based program called `DependecyAnalyser`, using a reactive programming based approach. The program should give the possibility to analyse and display dynamically/incrementally the dependencies found by interfaces/classes belonging to the project as a graph, possibly grouping interfaces/classes in packages.
-   The GUI should provide a component to select the source root folder, a button to start the process, and a panel to display the output of the ongoing process, including a couple of output boxed reporting the number of classes/interfaces analysed and the number of dependencies found.
+The **asynchronous library** (DependencyAnalyserLib) provides non-blocking methods using [Vert.x](https://vertx.io/) to analyze Java source files and extract dependencies between classes, interfaces, and packages. It supports:
+* getClassDependencies(file): ClassDepsReport
+* getPackageDependencies(folder): PackageDepsReport
+* getProjectDependencies(projectFolder): ProjectDepsReport
 
-   Further notes:
-    - The suggested reactive programming framework to be adopted is [ReactiveX](https://reactivex.io/), e.g. [RxJava](https://github.com/ReactiveX/RxJava) if working in Java or the JVM.
-    - As for the previous point, [JavaParser](https://javaparser.org/) can be used for parsing individual Java source files and build the AST.
+The **reactive GUI** (based on DependencyAnalyser) uses [RxJava](https://github.com/ReactiveX/RxJava) to incrementally display dependencies as a dynamic graph. Features include:
+* Folder selection and analysis start button
+* Real-time visualization with zoom/pan
+* Nodes grouped by package, laid out without overlapping
+* Arrows for dependencies
+* Statistics on elements scanned
 
-### The deliverable
+Parsing is based on [JavaParser](https://javaparser.org/). For the asynchronous library, a test program is included to demonstrate usage.
 
-The deliverable must be a zipped folder `Assignment-02`, to be submitted on the course website, including:
-- `src` directory with sources
-- `doc` directory with a short report in PDF (`report.pdf`). The report should include:
-    - A brief analysis of the problem, focusing in particular aspects that are relevant from concurrent point of view.
-    - A description of the adopted design, the strategy and architecture.
-    - A description of the behaviour of the system using one or multiple Petri Nets, choosing the proper level of abstraction.
+### Documentation
+Within the documentation directory, you will find a concise [report](docs/report.md) (in Italian) detailing all the design and implementation decisions made during the development process. In particular:
+- A brief analysis of the problem.
+- A description of the adopted design, strategy and architecture.
+- An explanation of the system's behaviour, using Petri Nets.
