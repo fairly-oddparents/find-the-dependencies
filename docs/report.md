@@ -35,11 +35,11 @@ Il sistema si articola in due componenti principali:
 Utilizza un event loop asincrono per la gestione delle richieste, implementato attraverso l'utilizzo del framework _Vert.x_, consente l’esecuzione non bloccante delle analisi.
 Offre tre metodi principali:
 
-- _getClassDependencies(File classSrcFile) → Future<ClassDepsReport>_ : fornisce un report contenente le dipendenze della classe specificata in _classSrcFile_.
+- _getClassDependencies(File classSrcFile) → Future\<ClassDepsReport>_ : fornisce un report contenente le dipendenze della classe specificata in _classSrcFile_.
 
-- _getPackageDependencies(File packageSrcFolder) → Future<PackageDepsReport>_ : fornisce un report contenente le dipendenze specifiche delle classi contenute nel package specificato in _packageSrcFolder_.
+- _getPackageDependencies(File packageSrcFolder) → Future\<PackageDepsReport>_ : fornisce un report contenente le dipendenze specifiche delle classi contenute nel package specificato in _packageSrcFolder_.
 
-- _getProjectDependencies(File projectSrcFolder) → Future<ProjectDepsReport>_ : fornisce un report contenente tutte le dipendenze delle classi nel progetto specificato in _projectSrcFolder_.
+- _getProjectDependencies(File projectSrcFolder) → Future\<ProjectDepsReport>_ : fornisce un report contenente tutte le dipendenze delle classi nel progetto specificato in _projectSrcFolder_.
 
 I metodi elencati sono asincroni e restituiscono un _Future_, il che implica che il risultato di ciascuno di essi viene utilizzato solo quando è disponibile. In particolare, il metodo _getProjectDependencies_ invoca _getPackageDependencies_, che a sua volta, seguendo lo stesso approccio asincrono, chiama internamente il metodo _getClassDependencies_.
 L'output prodotto è strutturato in oggetti _DepsReport_ che rappresentano le dipendenze tra elementi.
