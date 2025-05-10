@@ -14,7 +14,7 @@ public class GUI {
     public static final int GAP = 10;
     private final JFrame frame;
     private final JLabel classesLabel, dependenciesLabel;
-    private final GraphPanel graphPanel;
+    private final ClassDependenciesPanel graphPanel;
     private Controller controller;
 
     public GUI() {
@@ -53,7 +53,7 @@ public class GUI {
         statsPanel.add(this.classesLabel);
         statsPanel.add(this.dependenciesLabel);
 
-        this.graphPanel = new GraphPanel();
+        this.graphPanel = new ClassDependenciesPanel();
 
         this.frame.add(topPanel, BorderLayout.NORTH);
         this.frame.add(this.graphPanel, BorderLayout.CENTER);

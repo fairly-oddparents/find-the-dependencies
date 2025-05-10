@@ -5,7 +5,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class GraphPanel extends JPanel {
+public class ClassDependenciesPanel extends JPanel {
 
     private static final int NODE_SIZE = 20;
     private static final int TITLE_HEIGHT = 30;
@@ -30,7 +30,7 @@ public class GraphPanel extends JPanel {
     private int offsetX = 0, offsetY = 0;
     private Point lastMouse = null;
 
-    public GraphPanel() {
+    public ClassDependenciesPanel() {
         setBackground(Color.WHITE);
 
         addMouseWheelListener(e -> {
