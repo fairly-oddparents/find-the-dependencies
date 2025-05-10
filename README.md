@@ -17,7 +17,7 @@ The **reactive GUI** (based on DependencyAnalyser) uses [RxJava](https://github.
 * Arrows for dependencies
 * Statistics on elements scanned
 
-Parsing is based on [JavaParser](https://javaparser.org/). A test program is included to demonstrate usage.
+Parsing is based on [JavaParser](https://javaparser.org/). For the asynchronous library, a test program is included to demonstrate usage.
 
 ### Documentation
 Within the documentation directory, you will find a concise [report](docs/report.md) (in Italian) detailing all the design and implementation decisions made during the development process. In particular:
