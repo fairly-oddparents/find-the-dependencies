@@ -16,7 +16,7 @@ Terenzi Mirco (1193420; mirco.terenzi@studio.unibo.it)
 - [Comportamento del sistema](#comportamento-del-sistema)
 
 ## Analisi del problema
-Il progetto ha l’obiettivo di sviluppare una libreria capace di analizzare le dipendenze di un’applicazione Java a tre livelli: l’intero progetto, una specifica classe o un singolo package, al fine di identificare da quali elementi del codice dipende la porzione analizzata.
+Il progetto ha l’obiettivo di sviluppare una libreria capace di analizzare le dipendenze di un’applicazione Java su tre livelli di profondità: l’intero progetto, un singolo package o una specifica classe, al fine di identificare da quali elementi del codice dipende la porzione analizzata.
 
 In particolare, lo sviluppo prevede due soluzioni distinte, basate su approcci differenti:
 
@@ -24,7 +24,7 @@ In particolare, lo sviluppo prevede due soluzioni distinte, basate su approcci d
   
 - **Reattivo**: paradigma in cui il programma è modellato come una reazione a eventi esterni, orientato al flusso di dati e alla propagazione dei cambiamenti. I componenti reagiscono automaticamente a eventi o modifiche di stato, utilizzando stream asincroni e osservabili. In questo modello, i risultati si propagano come un flusso di valori nel tempo, anziché in un unico momento, permettendo all’utente finale di visualizzare l’avanzamento in tempo reale.
 
-Per la realizzazione della parte reattiva, è necessario sviluppare un’interfaccia grafica che consenta all’utente di avviare l’analisi e visualizzare dinamicamente, incrementalmente le dipendenze trovate nel progetto fornito.
+Per la realizzazione della parte reattiva, è necessario sviluppare un’interfaccia grafica che consenta all’utente di avviare l’analisi e visualizzare incrementalmente le dipendenze trovate del progetto selezionato.
 Le relazioni devono essere mostrate sotto forma di grafo, possibilmente raggruppando le classi nei rispettivi package.
 L’interfaccia deve includere due pulsanti (uno per selezionare la root folder del progetto e uno per avviare l’analisi), una sezione per la visualizzazione del grafo e due contatori (uno per il numero di classi analizzate e uno per il numero di dipendenze individuate).
 
@@ -46,7 +46,7 @@ Usa _JavaParser_ per analizzare i file sorgente e costruire l’AST (Abstract Sy
 L'output prodotto è strutturato in oggetti _DepsReport_ che rappresentano le dipendenze tra elementi.
 
 ### DependencyAnalyzer
-È la parte di programmazione reattiva, gestisce flussi di eventi multipli (input utente, aggiornamento grafico, ricezione dei risultati) tramite _ReactiveX_ (_RxJava_).
+È la parte che si occupa della programmazione reattiva, gestisce flussi di eventi multipli (input utente, aggiornamento grafico, ricezione dei risultati) tramite _ReactiveX_ (_RxJava_).
 
 La GUI è composta di tre componenti:
 
@@ -56,7 +56,7 @@ La GUI è composta di tre componenti:
 
 - Pannello visualizzazione dipendenze (grafo interattivo).
 
-L'interfaccia grafica permette di visualuzzare dinamicamente il progresso: le classi vengono analizzate e le dipendenze trovate sono progressivamente aggiunte nel grafo.
+L'interfaccia grafica permette di visualizzare dinamicamente l'analisi: le classi vengono analizzate e le dipendenze trovate sono progressivamente aggiunte nel grafo.
 
 Viene seguito un pattern MVC per garantire separazione tra interfaccia grafica e logica applicativa, attraverso l'utilizzo di un _Controller_ che collega le due parti.
 
