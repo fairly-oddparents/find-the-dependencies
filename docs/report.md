@@ -32,31 +32,37 @@ Per affrontare queste problematiche, lo sviluppo prevede due soluzioni distinte,
 Il sistema si articola in due componenti principali:
 
 ### DependencyAnalyzerLib
-Utilizza un event loop asincrono per la gestione delle richieste, implementato con _Vert.x_, consente l’esecuzione non bloccante delle analisi.
+Utilizza un event loop asincrono per la gestione delle richieste, implementato attraverso l'utilizzo del framework _Vert.x_, consente l’esecuzione non bloccante delle analisi.
 Offre tre metodi principali:
 
-- _getClassDependencies(File classSrcFile) → ClassDepsReport_
+- _getClassDependencies(File classSrcFile) → Future<ClassDepsReport>_ : fornisce un report contenente le dipendenze della classe specificata in _classSrcFile_.
 
-- _getPackageDependencies(File packageSrcFolder) → PackageDepsReport_
+- _getPackageDependencies(File packageSrcFolder) → Future<PackageDepsReport>_ : fornisce un report contenente le dipendenze specifiche delle classi contenute nel package specificato in _packageSrcFolder_.
 
-- _getProjectDependencies(File projectSrcFolder) → ProjectDepsReport_
+- _getProjectDependencies(File projectSrcFolder) → Future<ProjectDepsReport>_ : fornisce un report contenente tutte le dipendenze delle classi nel progetto specificato in _projectSrcFolder_.
 
-Usa _JavaParser_ per analizzare i file sorgente e costruire l’AST (Abstract Syntax Tree).
-
+I metodi elencati sono asincroni e restituiscono un _Future_, il che implica che il risultato di ciascuno di essi viene utilizzato solo quando è disponibile. In particolare, il metodo _getProjectDependencies_ invoca _getPackageDependencies_, che a sua volta, seguendo lo stesso approccio asincrono, chiama internamente il metodo _getClassDependencies_.
 L'output prodotto è strutturato in oggetti _DepsReport_ che rappresentano le dipendenze tra elementi.
 
+Utilizza _JavaParser_ per analizzare i file sorgente e costruire l’AST (Abstract Syntax Tree).
+
+
+
 ### DependencyAnalyzer
-È la parte che si occupa della programmazione reattiva, gestisce flussi di eventi multipli (input utente, aggiornamento grafico, ricezione dei risultati) tramite _ReactiveX_ (_RxJava_).
+È il componente responsabile della gestione reattiva del sistema, coordina flussi di eventi multipli (come input dell’utente, aggiornamenti dell’interfaccia grafica e ricezione dei risultati) attraverso l’utilizzo di _ReactiveX_ (_RxJava_).
 
 La GUI è composta di tre componenti:
 
 - Selettore della root del progetto.
-
 - Pulsante di avvio analisi.
-
 - Pannello visualizzazione dipendenze (grafo interattivo).
+- Due contatori per tenere traccia delle classi analizzate e delle dipendenze trovate.
 
-L'interfaccia grafica permette di visualizzare dinamicamente l'analisi: le classi vengono analizzate e le dipendenze trovate sono progressivamente aggiunte nel grafo.
+<div align="center">
+	<img src="./images/project-gui.png" alt="Rappresentazione dell'interfaccia grafica del sistema reattivo." width="500"/>
+</div>
+
+L'interfaccia grafica permette di visualizzare dinamicamente l'analisi: le classi vengono analizzate e le dipendenze trovate sono progressivamente aggiunte nel grafo, raggruppate in base al package di appartenenza.
 
 Viene seguito un pattern MVC per garantire separazione tra interfaccia grafica e logica applicativa, attraverso l'utilizzo di un _Controller_ che collega le due parti.
 
