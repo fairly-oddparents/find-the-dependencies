@@ -9,8 +9,6 @@ The **asynchronous library** (DependencyAnalyserLib) provides non-blocking metho
 * getClassDependencies(file): ClassDepsReport
 * getPackageDependencies(folder): PackageDepsReport
 * getProjectDependencies(projectFolder): ProjectDepsReport
-  
-Parsing is based on JavaParser. A test program is included to demonstrate usage.
 
 The **reactive GUI** (based on DependencyAnalyser) uses [RxJava](https://github.com/ReactiveX/RxJava) to incrementally display dependencies as a dynamic graph. Features include:
 * Folder selection and analysis start button
@@ -18,6 +16,8 @@ The **reactive GUI** (based on DependencyAnalyser) uses [RxJava](https://github.
 * Nodes grouped by package, laid out without overlapping
 * Arrows for dependencies
 * Statistics on elements scanned
+
+Parsing is based on [JavaParser](https://javaparser.org/). A test program is included to demonstrate usage.
 
 ### Documentation
 Within the documentation directory, you will find a concise [report](docs/report.md) (in Italian) detailing all the design and implementation decisions made during the development process. In particular:
