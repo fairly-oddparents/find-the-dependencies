@@ -16,16 +16,17 @@ Terenzi Mirco (1193420; mirco.terenzi@studio.unibo.it)
 - [Comportamento del sistema](#comportamento-del-sistema)
 
 ## Analisi del problema
-Il progetto ha come obiettivo l’analisi delle dipendenze tra classi, interfacce e package in un progetto Java, ovvero sull’identificazione di quali elementi del codice utilizzano altri.
+Il progetto ha l’obiettivo di sviluppare una libreria capace di analizzare le dipendenze di un’applicazione Java a tre livelli: l’intero progetto, una specifica classe o un singolo package, al fine di identificare da quali elementi del codice dipende la porzione analizzata.
 
-L’analisi delle dipendenze è un’operazione potenzialmente costosa in termini computazionali, soprattutto su grandi repository di codice.
+In particolare, lo sviluppo prevede due soluzioni distinte, basate su approcci differenti:
 
-La difficoltà non sta solo nell’analizzare i singoli file, ma nel mettere insieme i risultati in modo coerente, tenendo conto dell’intero progetto. 
-Per affrontare questo problema, il progetto richiede di sviluppare due soluzioni distinte, basate su modelli di esecuzione diversi:
+- **Asincrono**: l’esecuzione viene suddivisa in task, ciascuno dei quali è eseguito in modo indipendente, senza bloccare il flusso principale del programma. Il risultato di ogni operazione è reso disponibile al termine della sua esecuzione.
+  
+- **Reattivo**: paradigma in cui il programma è modellato come una reazione a eventi esterni, orientato al flusso di dati e alla propagazione dei cambiamenti. I componenti reagiscono automaticamente a eventi o modifiche di stato, utilizzando stream asincroni e osservabili. In questo modello, i risultati si propagano come un flusso di valori nel tempo, anziché in un unico momento, permettendo all’utente finale di visualizzare l’avanzamento in tempo reale.
 
-- Un **approccio asincrono**, in cui l’analisi viene eseguita in modo non bloccante e il risultato finale è disponibile solo una volta completato il processo.
-
-- Un **approccio reattivo**, in cui i risultati vengono forniti progressivamente, man mano che l’analisi procede, permettendo all’utente di visualizzare l’avanzamento in tempo reale.
+Per la realizzazione della parte reattiva, è necessario sviluppare un’interfaccia grafica che consenta all’utente di avviare l’analisi e visualizzare dinamicamente, incrementalmente le dipendenze trovate nel progetto fornito.
+Le relazioni devono essere mostrate sotto forma di grafo, possibilmente raggruppando le classi nei rispettivi package.
+L’interfaccia deve includere due pulsanti (uno per selezionare la root folder del progetto e uno per avviare l’analisi), una sezione per la visualizzazione del grafo e due contatori (uno per il numero di classi analizzate e uno per il numero di dipendenze individuate).
 
 ## Design e Architettura
 Il sistema si articola in due componenti principali:
