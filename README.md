@@ -1,4 +1,5 @@
 # Find the Dependencies! 🔎
+![GUI](docs/images/project-gui.png)
 The repository contains the second assignment of the [Concurrent and Distributed Programming course](https://www.unibo.it/en/study/course-units-transferable-skills-moocs/course-unit-catalogue/course-unit/2024/412598) (Master's Degree in CSE @ Unibo).
 
 The project involves designing and developing a library for analyzing class/interface dependencies in a Java codebase, in two different version: based on asynchronous programming (event-loop based) and on reactive programming (GUI-based for visual exploration).
