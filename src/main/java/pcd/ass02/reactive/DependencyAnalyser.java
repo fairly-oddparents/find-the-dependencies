@@ -16,8 +16,7 @@ import java.util.stream.Stream;
 public class DependencyAnalyser {
     public Set<Path> getJavaFiles(Path root) {
         try (Stream<Path> files = Files.walk(root)) {
-            return files
-                    .filter(f -> f.toString().endsWith(".java"))
+            return files.filter(f -> f.toString().endsWith(PathHelper.FILE_EXTENSION))
                     .collect(Collectors.toSet());
         } catch (IOException e) {
             return Set.of();
@@ -26,30 +25,30 @@ public class DependencyAnalyser {
 
     public ClassDependency parseClassDependencies(Path javaFile) {
         JavaParser parser = PathHelper.getJavaParser(javaFile.toString());
-
         try {
             String fileContent = Files.readString(javaFile);
             CompilationUnit cu = parser.parse(fileContent).getResult()
                     .orElseThrow(() -> new RuntimeException("Parsing failed"));
-            Set<String> dependencies = new HashSet<>();
-            String className = "";
-            if(javaFile.getFileName() != null) {
-                String fileName = javaFile.getFileName().toString();
-                className = cu.getPrimaryTypeName().orElse(
-                        fileName.endsWith(".java") ? fileName.substring(0, fileName.length() - ".java".length()) : fileName
-                );
-
-                PathHelper.collectDependencies(cu, javaFile).forEach(dep ->
-                        dependencies.add(dep.substring(dep.lastIndexOf('.') + 1))
-                );
-            }
+            String className = extractClassName(javaFile, cu);
+            Set<String> dependencies = new HashSet<>(PathHelper.collectDependencies(cu, javaFile));
             return new ClassDependency(className, dependencies);
-
         } catch (ParseProblemException e) {
-            System.out.println("Error parsing file: " + javaFile + ", " + e.getMessage());
+            System.err.println("Error parsing file: " + javaFile + ", " + e.getMessage());
             return null;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
+    private String extractClassName(Path javaFile, CompilationUnit cu) {
+        String fileName = javaFile.getFileName().toString();
+        String packageName = cu.getPackageDeclaration()
+                .map(pd -> pd.getName().toString())
+                .orElse("");
+        String simpleName = cu.getPrimaryTypeName().orElse(
+                fileName.endsWith(".java") ? fileName.substring(0, fileName.length() - ".java".length()) : fileName
+        );
+        return packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
+    }
+
 }
