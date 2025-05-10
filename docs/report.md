@@ -68,4 +68,11 @@ Viene seguito un pattern MVC per garantire separazione tra interfaccia grafica e
 
 ## Comportamento del sistema
 ### DependencyAnalyzerLib
+<div align="center">
+	<img src="./images/asynch-petri-nets.png" alt="Rete di petri componenti asincrone" width="1000"/>
+</div>
+
+- _n_: numero di classi nel package
+- _m_: numero di package nel progetto
+
 ### DependencyAnalyzer
