@@ -191,7 +191,7 @@ public class ClassDependenciesPanel extends JPanel {
             g.setColor(Color.BLACK);
             g.drawString(
                     node.name.substring(node.name.lastIndexOf('.') + 1),
-                    node.pos.x - 10,
+                    node.pos.x + 15,
                     node.pos.y + 5
             );
         }
