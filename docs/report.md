@@ -80,7 +80,7 @@ asincroni e di gestire eventi in modo reattivo. La libreria fornisce un'implemen
 permette di osservare e reagire a eventi o cambiamenti di stato in modo semplice ed efficiente.
 
 <div align="center">
-	<img src="./images/project-gui.png" alt="Rappresentazione dell'interfaccia grafica del sistema reattivo." width="500"/>
+	<img src="./images/project-gui.png" alt="Rappresentazione dell'interfaccia grafica del sistema reattivo." width="700"/>
 </div>
 
 La GUI è progettata per essere reattiva, consentendo all'utente di selezionare un progetto e visualizzare le
@@ -103,3 +103,9 @@ più avanzata della backpressure, ad esempio gestendo la frequenza di emissione 
 - _m_: numero di package nel progetto
 
 ### Programma reattivo
+<div align="center">
+	<img src="./images/reactive-petri-net.png" alt="Rete di petri programma reattivo" width="500"/>
+</div>
+
+- _n_: numero di classi trovate
+- _m_: numero di dipendenze per classe (variabile per ogni classe)
