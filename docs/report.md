@@ -16,17 +16,26 @@ Terenzi Mirco (1193420; mirco.terenzi@studio.unibo.it)
 - [Comportamento del sistema](#comportamento-del-sistema)
 
 ## Analisi del problema
-Il progetto ha l’obiettivo di sviluppare una libreria capace di analizzare le dipendenze di un’applicazione Java su tre livelli di profondità: l’intero progetto, un singolo package o una specifica classe, al fine di identificare da quali elementi del codice dipende la porzione analizzata.
+Il progetto ha l’obiettivo di sviluppare una libreria capace di analizzare le dipendenze di un’applicazione Java su tre 
+livelli di profondità: l’intero progetto, un singolo package o una specifica classe, al fine di identificare da quali 
+elementi del codice dipende la porzione analizzata.
 
 In particolare, lo sviluppo prevede due soluzioni distinte, basate su approcci differenti:
 
-- **Asincrono**: l’esecuzione viene suddivisa in task, ciascuno dei quali è eseguito in modo indipendente, senza bloccare il flusso principale del programma. Il risultato di ogni operazione è reso disponibile al termine della sua esecuzione.
+- **Asincrono**: l’esecuzione viene suddivisa in task, ciascuno dei quali è eseguito in modo indipendente, senza bloccare 
+il flusso principale del programma. Il risultato di ogni operazione è reso disponibile al termine della sua esecuzione.
   
-- **Reattivo**: paradigma in cui il programma è modellato come una reazione a eventi esterni, orientato al flusso di dati e alla propagazione dei cambiamenti. I componenti reagiscono automaticamente a eventi o modifiche di stato, utilizzando stream asincroni e osservabili. In questo modello, i risultati si propagano come un flusso di valori nel tempo, anziché in un unico momento, permettendo all’utente finale di visualizzare l’avanzamento in tempo reale.
+- **Reattivo**: paradigma in cui il programma è modellato come una reazione a eventi esterni, orientato al flusso di dati 
+e alla propagazione dei cambiamenti. I componenti reagiscono automaticamente a eventi o modifiche di stato, utilizzando 
+stream asincroni e osservabili. In questo modello, i risultati si propagano come un flusso di valori nel tempo, anziché 
+in un unico momento, permettendo all’utente finale di visualizzare l’avanzamento in tempo reale.
 
-Per la realizzazione della parte reattiva, è necessario sviluppare un’interfaccia grafica che consenta all’utente di avviare l’analisi e visualizzare incrementalmente le dipendenze trovate del progetto selezionato.
+Per la realizzazione della parte reattiva, è necessario sviluppare un’interfaccia grafica che consenta all’utente di 
+avviare l’analisi e visualizzare incrementalmente le dipendenze trovate del progetto selezionato.
 Le relazioni devono essere mostrate sotto forma di grafo, possibilmente raggruppando le classi nei rispettivi package.
-L’interfaccia deve includere due pulsanti (uno per selezionare la root folder del progetto e uno per avviare l’analisi), una sezione per la visualizzazione del grafo e due contatori (uno per il numero di classi analizzate e uno per il numero di dipendenze individuate).
+L’interfaccia deve includere due pulsanti (uno per selezionare la root folder del progetto e uno per avviare l’analisi), 
+una sezione per la visualizzazione del grafo e due contatori (uno per il numero di classi analizzate e uno per il numero 
+di dipendenze individuate).
 
 ## Design e Architettura
 Il sistema si articola in due componenti principali:
