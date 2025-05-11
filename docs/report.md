@@ -38,37 +38,55 @@ una sezione per la visualizzazione del grafo e due contatori (uno per il numero 
 di dipendenze individuate).
 
 ## Design e Architettura
-Il sistema si articola in due componenti principali:
 
-### DependencyAnalyzerLib
-Utilizza un event loop asincrono per la gestione delle richieste, implementato con _Vert.x_, consente l’esecuzione non bloccante delle analisi.
-Offre tre metodi principali:
+### Libreria asincrona
+Il progetto è basato sull’uso del framework [Vert.x](https://vertx.io/), che fornisce un’infrastruttura asincrona basata 
+su un event loop interno. Questo permette di eseguire operazioni (come lettura file e parsing) in modo non-bloccante, 
+garantendo reattività, senza dover gestire direttamente thread o concorrenza. La libreria `DependencyAnalyserLib` espone 
+tre metodi principali:
 
-- _getClassDependencies(File classSrcFile) → ClassDepsReport_
+- `getClassDependencies(File classSrcFile): Future\<ClassDepsReport>` fornisce un report contenente tutte le dipendenze 
+della classe specificata tramite il path, passato come parametro;
+- `getPackageDependencies(File packageSrcFolder): Future\<PackageDepsReport>` analizza le dipendenze del package in 
+ingresso, in particolare processando ogni classe a esso appartenente;
+- `getProjectDependencies(File projectSrcFolder): Future\<ProjectDepsReport>` restituisce una lista di dipendenze per 
+ogni classe all'interno di un determinato progetto.
 
-- _getPackageDependencies(File packageSrcFolder) → PackageDepsReport_
+Tutti i metodi ritornano oggetti _Future_, il che consente una programmazione reattiva: i risultati delle analisi vengono 
+gestiti tramite callback (onSuccess, onFailure, onComplete) che vengono eseguite solo al termine dell’elaborazione, senza 
+bloccare l’esecuzione del programma.
 
-- _getProjectDependencies(File projectSrcFolder) → ProjectDepsReport_
+I risultati sono modellati da tre classi (ClassDepsReport, PackageDepsReport, ProjectDepsReport) che estendono una classe 
+astratta generica `DepsReport<T>`. Questo design permette una composizione strutturata dei report: un report di progetto 
+aggrega report di package, e ciascun report di package aggrega quelli delle classi.
 
-Usa _JavaParser_ per analizzare i file sorgente e costruire l’AST (Abstract Syntax Tree).
+Infine, l’utilizzo della libreria [JavaParser](https://javaparser.org) consente di analizzare il codice sorgente Java 
+tramite Abstract Syntax Tree (AST).
 
-L'output prodotto è strutturato in oggetti _DepsReport_ che rappresentano le dipendenze tra elementi.
+### Programma reattivo
+L'architettura del programma reattivo è basata su un pattern Model-View-Controller (MVC), che separa la logica 
+dell'applicazione dalla presentazione. La parte di analisi delle dipendenze è implementata nella classe 
+`DependencyAnalyser`, che fornisce le funzionalità di analisi, mentre la parte di interfaccia grafica è gestita dalla
+classe `GUI`, realizzata utilizzando la libreria [Swing](https://docs.oracle.com/javase/7/docs/api/javax/swing/package-summary.html)
+di Java.
 
-### DependencyAnalyzer
-È la parte che si occupa della programmazione reattiva, gestisce flussi di eventi multipli (input utente, aggiornamento grafico, ricezione dei risultati) tramite _ReactiveX_ (_RxJava_).
+Il progetto utilizza il framework [RxJava](https://github.com/ReactiveX/RxJava) per implementare la programmazione
+reattiva. RxJava è una libreria per la programmazione reattiva in Java, che consente di lavorare con flussi di dati
+asincroni e di gestire eventi in modo reattivo. La libreria fornisce un'implementazione del pattern Observer, che
+permette di osservare e reagire a eventi o cambiamenti di stato in modo semplice ed efficiente.
 
-La GUI è composta di tre componenti:
+![GUI](images/project-gui.png)
 
-- Selettore della root del progetto.
+La GUI è progettata per essere reattiva, consentendo all'utente di selezionare un progetto e visualizzare le
+dipendenze in modo dinamico, man mano che le varie classi vengono analizzate. La disposizione dei nodi nel grafo 
+è gestita raggruppando le classi in package, in modo da rendere più chiara la visualizzazione delle dipendenze.
 
-- Pulsante di avvio analisi.
-
-- Pannello visualizzazione dipendenze (grafo interattivo).
-
-L'interfaccia grafica permette di visualizzare dinamicamente l'analisi: le classi vengono analizzate e le dipendenze trovate sono progressivamente aggiunte nel grafo.
-
-Viene seguito un pattern MVC per garantire separazione tra interfaccia grafica e logica applicativa, attraverso l'utilizzo di un _Controller_ che collega le due parti.
+All'interno del programma, è implementata una semplice gestione della backpressure, che consente di limitare il numero
+di eventi emessi in un dato momento, evitando sovraccarichi e garantendo una reattività fluida. Questo è realizzato
+tramite la definizione di una dimensione massima per il buffer degli eventi, che controlla quanti eventi possono
+essere emessi prima di essere elaborati. In futuro, il progetto potrebbe essere esteso per includere una gestione
+più avanzata della backpressure, ad esempio gestendo la frequenza di emissione degli eventi.
 
 ## Comportamento del sistema
-### DependencyAnalyzerLib
-### DependencyAnalyzer
+### Libreria asincrona
+### Programma reattivo
