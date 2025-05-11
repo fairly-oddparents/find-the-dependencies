@@ -12,15 +12,14 @@ import java.util.List;
 
 public class Controller {
 
+    private static final int BUFFER_SIZE = 1000;
+
     private final GUI view;
     private final DependencyAnalyser model;
+    private final List<Disposable> disposables;
 
     private int classCount = 0;
     private int dependencyCount = 0;
-
-    private static final int BUFFER_SIZE = 1000;
-
-    private final List<Disposable> disposables;
 
     public Controller(GUI view, DependencyAnalyser model) {
         this.view  = view;
@@ -31,7 +30,7 @@ public class Controller {
     public void startAnalysis(String folderPath) {
         String path = folderPath.trim();
         if (path.isEmpty()) {
-            view.showError("Select a folder to analyze");
+            view.showError("Before starting the analysis, select a folder to inspect.");
             return;
         }
         this.view.clearGraph();
@@ -40,9 +39,9 @@ public class Controller {
 
         this.disposables.add(Flowable.fromIterable(model.getJavaFiles(Paths.get(path)))
                 .onBackpressureBuffer(BUFFER_SIZE, () -> {}, BackpressureOverflowStrategy.ERROR)
-                .subscribeOn(Schedulers.io()) //background elastic thread pool for slow blocking operations (Files.walk())
+                .subscribeOn(Schedulers.io())
                 .map(model::parseClassDependencies)
-                .observeOn(Schedulers.single()) //single thread for subscribers (for sequential work and UI)
+                .observeOn(Schedulers.single())
                 .subscribe(
                         dep -> {
                             classCount++;
@@ -50,13 +49,10 @@ public class Controller {
                             this.view.addToGraph(dep.getName(), dep.getDependencies());
                             view.updateStats(classCount, dependencyCount);
                         },
-                        err -> {
-                            if (err instanceof MissingBackpressureException) {
-                                view.showError("Too many classes, full buffer");
-                            } else {
-                                view.showError(err.getMessage());
-                            }
-                        }
+                        err -> view.showError(err instanceof MissingBackpressureException
+                                ? "Too many files to process at once, given the buffer limit set. Consider a smaller folder."
+                                : err.getMessage()
+                        )
                 )
         );
     }

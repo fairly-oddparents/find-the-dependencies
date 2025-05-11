@@ -33,7 +33,7 @@ public final class PathHelper {
     public static JavaParser getJavaParser(String classSrcFile) {
         Path sourceRoot = findSourceRoot(Paths.get(classSrcFile));
         if (sourceRoot == null) {
-            throw new IllegalArgumentException("Cannot locate 'java' folder in the path");
+            throw new IllegalArgumentException("Source root not found. Check the file path contains 'java' folder.");
         }
 
         CombinedTypeSolver solver = new CombinedTypeSolver(

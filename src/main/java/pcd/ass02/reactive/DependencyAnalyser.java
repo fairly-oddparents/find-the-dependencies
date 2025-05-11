@@ -33,7 +33,7 @@ public class DependencyAnalyser {
             Set<String> dependencies = new HashSet<>(PathHelper.collectDependencies(cu, javaFile));
             return new ClassDependency(className, dependencies);
         } catch (ParseProblemException e) {
-            System.err.println("Error parsing file: " + javaFile + ", " + e.getMessage());
+            System.err.println("Error parsing " + javaFile + ": " + e.getMessage());
             return null;
         } catch (IOException e) {
             throw new RuntimeException(e);
