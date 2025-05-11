@@ -21,7 +21,7 @@ public class GUI {
     public GUI() {
         this.frame = new JFrame(FRAME_NAME);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setSize(800, 600);
+        this.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.frame.setLayout(new BorderLayout());
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, GAP, GAP));
