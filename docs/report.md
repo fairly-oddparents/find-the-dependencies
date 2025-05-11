@@ -16,11 +16,10 @@ Terenzi Mirco (1193420; mirco.terenzi@studio.unibo.it)
 - [Comportamento del sistema](#comportamento-del-sistema)
 
 ## Analisi del problema
-Il progetto ha l’obiettivo di sviluppare una libreria capace di analizzare le dipendenze di un’applicazione Java su tre 
-livelli di profondità: l’intero progetto, un singolo package o una specifica classe, al fine di identificare da quali 
-elementi del codice dipende la porzione analizzata.
+Il progetto ha come obiettivo l'analisi delle dipendenze tra classi, interfacce e package in un’applicazione Java, 
+ovvero identificare da quali elementi del codice dipendono le porzioni analizzate.
 
-In particolare, lo sviluppo prevede due soluzioni distinte, basate su approcci differenti:
+In particolare, lo sviluppo prevede due soluzioni distinte, ciascuna basata su un approccio differente:
 
 - **Asincrono**: l’esecuzione viene suddivisa in task, ciascuno dei quali è eseguito in modo indipendente, senza bloccare 
 il flusso principale del programma. Il risultato di ogni operazione è reso disponibile al termine della sua esecuzione.
@@ -75,7 +74,9 @@ reattiva. RxJava è una libreria per la programmazione reattiva in Java, che con
 asincroni e di gestire eventi in modo reattivo. La libreria fornisce un'implementazione del pattern Observer, che
 permette di osservare e reagire a eventi o cambiamenti di stato in modo semplice ed efficiente.
 
-![GUI](images/project-gui.png)
+<div align="center">
+	<img src="./images/project-gui.png" alt="Rappresentazione dell'interfaccia grafica del sistema reattivo." width="500"/>
+</div>
 
 La GUI è progettata per essere reattiva, consentendo all'utente di selezionare un progetto e visualizzare le
 dipendenze in modo dinamico, man mano che le varie classi vengono analizzate. La disposizione dei nodi nel grafo 
@@ -89,4 +90,11 @@ più avanzata della backpressure, ad esempio gestendo la frequenza di emissione 
 
 ## Comportamento del sistema
 ### Libreria asincrona
+<div align="center">
+	<img src="./images/asynch-petri-nets.png" alt="Rete di petri componenti asincrone" width="1000"/>
+</div>
+
+- _n_: numero di classi nel package
+- _m_: numero di package nel progetto
+
 ### Programma reattivo
