@@ -46,7 +46,9 @@ public class DependencyAnalyser {
                 .map(pd -> pd.getName().toString())
                 .orElse("");
         String simpleName = cu.getPrimaryTypeName().orElse(
-                fileName.endsWith(".java") ? fileName.substring(0, fileName.length() - ".java".length()) : fileName
+                fileName.endsWith(PathHelper.FILE_EXTENSION)
+                        ? fileName.substring(0, fileName.length() - PathHelper.FILE_EXTENSION.length())
+                        : fileName
         );
         return packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
     }

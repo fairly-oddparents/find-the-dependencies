@@ -67,7 +67,7 @@ public final class PathHelper {
         String packageName = cu.getPackageDeclaration()
                 .map(pd -> pd.getName().toString())
                 .orElse("");
-        String className = sourceFilePath.getFileName().toString().replace(".java", "");
+        String className = sourceFilePath.getFileName().toString().replace(FILE_EXTENSION, "");
         String fullyQualifiedClassName = packageName.isEmpty()
                 ? className
                 : packageName + "." + className;

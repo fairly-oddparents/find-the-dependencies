@@ -12,13 +12,14 @@ import java.util.Set;
 public class GUI {
 
     public static final int GAP = 10;
+    public static final String FRAME_NAME = "Dependency Graph Analyzer";
     private final JFrame frame;
     private final JLabel classesLabel, dependenciesLabel;
     private final ClassDependenciesPanel graphPanel;
     private Controller controller;
 
     public GUI() {
-        this.frame = new JFrame("Dependency Graph Analyzer");
+        this.frame = new JFrame(FRAME_NAME);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setSize(800, 600);
         this.frame.setLayout(new BorderLayout());
@@ -80,7 +81,7 @@ public class GUI {
     }
 
     public void showError(String message) {
-        JOptionPane.showMessageDialog(frame, message, "Error: ", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(frame, message, FRAME_NAME + ": Error", JOptionPane.ERROR_MESSAGE);
     }
 
     public void addToGraph(String name, Set<String> dependencies) {

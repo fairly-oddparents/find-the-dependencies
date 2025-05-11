@@ -10,6 +10,10 @@ public class ClassDependenciesPanel extends JPanel {
     private static final int NODE_SIZE = 20;
     private static final int TITLE_HEIGHT = 30;
     private static final int BLOCK_SIZE = 300;
+    public static final int COLOR_BOUND = 200;
+    public static final int TRANSPARENCY = 50;
+    public static final int PACKAGE_PADDING = 80;
+    public static final int LABEL_X_OFFSET = 15;
 
     private static class Node {
         final String name;
@@ -134,9 +138,10 @@ public class ClassDependenciesPanel extends JPanel {
         for (Node node : nodes.values()) {
             packages.computeIfAbsent(node.pkg, k -> new ArrayList<>()).add(node);
             packageColors.computeIfAbsent(node.pkg, k -> new Color(
-                    rand.nextInt(200),
-                    rand.nextInt(200),
-                    rand.nextInt(200), 50)
+                    rand.nextInt(COLOR_BOUND),
+                    rand.nextInt(COLOR_BOUND),
+                    rand.nextInt(COLOR_BOUND),
+                    TRANSPARENCY)
             );
         }
         return packages;
@@ -163,8 +168,8 @@ public class ClassDependenciesPanel extends JPanel {
 
         g.setColor(packageColors.get(packageName));
         g.fillRoundRect(
-                minX - 40, minY - 40,
-                (maxX - minX) + 80, (maxY - minY) + 80,
+                minX - (PACKAGE_PADDING / 2), minY - (PACKAGE_PADDING / 2),
+                (maxX - minX) + PACKAGE_PADDING, (maxY - minY) + PACKAGE_PADDING,
                 NODE_SIZE, NODE_SIZE
         );
 
@@ -191,8 +196,8 @@ public class ClassDependenciesPanel extends JPanel {
             g.setColor(Color.BLACK);
             g.drawString(
                     node.name.substring(node.name.lastIndexOf('.') + 1),
-                    node.pos.x + 15,
-                    node.pos.y + 5
+                    node.pos.x + LABEL_X_OFFSET,
+                    node.pos.y
             );
         }
     }
