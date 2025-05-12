@@ -29,17 +29,19 @@ public final class DependencyAnalyserLib {
         if (!classSrcFile.endsWith(PathHelper.FILE_EXTENSION)) {
             throw new IllegalArgumentException("Not a Java file");
         }
-
         return fileSystem.exists(classSrcFile).compose(exists ->
                 exists ? fileSystem.lprops(classSrcFile) : Future.failedFuture("File not found")
         ).compose(props -> props.isDirectory()
                 ? Future.failedFuture("Path is a directory")
                 : fileSystem.readFile(classSrcFile)
-        ).map(file -> {
-            CompilationUnit cu = parser.parse(file.toString()).getResult()
-                    .orElseThrow(() -> new RuntimeException("Parsing failed"));
-            List<String> deps = PathHelper.collectDependencies(cu, Paths.get(classSrcFile));
-            return new ClassDepsReport(classSrcFile, deps);
+        ).compose(file -> {
+            String fileContent = file.toString();
+            return vertx.executeBlocking(() -> {
+                CompilationUnit cu = parser.parse(fileContent).getResult()
+                        .orElseThrow(() -> new RuntimeException("Parsing failed"));
+                List<String> deps = PathHelper.collectDependencies(cu, Paths.get(classSrcFile));
+                return new ClassDepsReport(classSrcFile, deps);
+            });
         });
     }
 
