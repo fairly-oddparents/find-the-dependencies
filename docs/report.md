@@ -34,6 +34,11 @@ visualizzare l’avanzamento in tempo reale.
 L’interfaccia deve includere due pulsanti (uno per selezionare la _root folder_ del progetto e uno per avviare l’analisi), 
 una sezione per la visualizzazione del grafo e due contatori (uno per il numero di classi analizzate e uno per il numero di dipendenze individuate).
 
+L’analisi delle dipendenze è un’operazione potenzialmente costosa in termini computazionali, soprattutto su repository di 
+grandi dimensioni. La difficoltà non riguarda solo l’analisi dei singoli file, ma anche la combinazione dei risultati in modo 
+coerente. Inoltre è necessario gestire correttamente gli errori, come file non trovati o errori di parsing, e garantire
+una visualizzazione dei risultati chiara e informativa per l'utente.
+
 ## Design e Architettura
 
 ### Libreria asincrona
