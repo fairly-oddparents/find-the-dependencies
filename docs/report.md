@@ -114,6 +114,3 @@ Solo al termine dell'analisi di tutte le classi è possibile procedere con l’a
 <div align="center">
 	<img src="./images/reactive-petri-net.png" alt="Rete di petri programma reattivo" width="400"/>
 </div>
-
-- _n_: numero di classi trovate
-- _m_: numero di dipendenze per classe (variabile per ogni classe)
