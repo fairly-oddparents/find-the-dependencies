@@ -92,14 +92,25 @@ dipendenze in modo dinamico, man mano che le varie classi vengono analizzate. La
 
 ## Comportamento del sistema
 ### Versione asincrona
+Le tre reti di Petri illustrate nella fig. 1 rappresentano rispettivamente i tre metodi della libreria: getClassDependencies, getPackageDependencies e getProjectDependencies. 
+Per ciascuna rete sono evidenziati i principali controlli, necessari per garantire il corretto funzionamento dell'analisi delle dipendenze.
+Ogni passaggio rappresenta una composizione asincrona che può portare al fallimento o al successo del processo.
+
+In particolare, viene identificato con:
+- _n_ il numero di classi nel package;
+- _m_ il numero di package nel progetto.
+
 <div align="center">
 	<img src="./images/asynch-petri-nets.png" alt="Rete di petri componenti asincrone" width="1000"/>
 </div>
 
-- _n_: numero di classi nel package
-- _m_: numero di package nel progetto
-
 ### Versione reattiva
+La rete di Petri riportata in fig. 2 descrive il comportamento del programma nella sua versione reattiva, 
+a partire dalla selezione del progetto da analizzare. 
+L’attenzione è rivolta alla fase di individuazione delle classi Java, il cui numero, indicato con `(...)`, può variare, riflettendo la natura dinamica dei progetti analizzati.
+Per ciascuna viene identificato uno specifico percorso che cattura la sua autonomia nella ricerca delle rispettive dipendenze (in figura, quantificate come `r` e `x`).
+Solo al termine dell'analisi di tutte le classi è possibile procedere con l’analisi di altri progetti.
+
 <div align="center">
 	<img src="./images/reactive-petri-net.png" alt="Rete di petri programma reattivo" width="400"/>
 </div>
