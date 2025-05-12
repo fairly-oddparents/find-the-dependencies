@@ -25,7 +25,7 @@ Lo sviluppo prevede due soluzioni distinte, ciascuna basata su un approccio diff
 sull’intero progetto, su un singolo package o su una specifica classe, con l’obiettivo di identificare le relative dipendenze. 
 Le operazioni su ciascuno di questi livelli devono essere eseguite in modo indipendente e non bloccante.
 
-- **Reattivo**: è previsto lo sviluppo di un'interfaccia grafica che permetta all’utente di avviare l’analisi delle dipendenze
+- **Reattivo**: è previsto lo sviluppo di un programma GUI-based che permetta all’utente di avviare l’analisi delle dipendenze
 e visualizzare in modo dinamico e incrementale i risultati ottenuti per il progetto selezionato. 
 Le relazioni devono essere mostrate sotto forma di grafo, eventualmente raggruppando le classi nei rispettivi package. 
 I componenti devono reagire automaticamente a eventi esterni o modifiche di stato. 
@@ -36,10 +36,9 @@ una sezione per la visualizzazione del grafo e due contatori (uno per il numero 
 
 ## Design e Architettura
 
-### Libreria asincrona
+### Versione asincrona
 Il progetto è basato sull’utilizzo del framework [Vert.x](https://vertx.io/), che fornisce un’infrastruttura asincrona basata 
-su un event loop interno. Questo permette di eseguire operazioni (come lettura file e parsing) in modo non-bloccante, 
-garantendo reattività, senza dover gestire direttamente thread o concorrenza. La libreria `DependencyAnalyserLib` espone 
+su un event loop interno. Questo permette di eseguire operazioni (come lettura file e parsing) in modo non-bloccante, senza dover gestire direttamente thread o concorrenza. La libreria `DependencyAnalyserLib` espone 
 tre metodi principali:
 
 - `getClassDependencies(File classSrcFile): Future<ClassDepsReport>` fornisce un report contenente tutte le dipendenze 
@@ -55,26 +54,27 @@ bloccare l’esecuzione del programma.
 I risultati sono modellati da tre classi (`ClassDepsReport`, `PackageDepsReport`, `ProjectDepsReport`) che estendono una classe 
 astratta generica `DepsReport<T>`. Questo design permette una composizione strutturata dei report: un report di progetto 
 aggrega report di package, e ciascun report di package aggrega quelli delle classi.
-In particolare, il metodo _getProjectDependencies_ invoca _getPackageDependencies_, che a sua volta, 
-seguendo lo stesso approccio asincrono, chiama internamente il metodo _getClassDependencies_.
 
 Infine, l’utilizzo della libreria [JavaParser](https://javaparser.org) consente di analizzare il codice sorgente Java 
-tramite Abstract Syntax Tree (AST).
+tramite Abstract Syntax Tree (AST), per la ricerca delle dipendenze.
 
-### Programma reattivo
-È il componente responsabile della gestione reattiva del sistema, coordina flussi di eventi multipli 
-(come input dell’utente, aggiornamenti dell’interfaccia grafica e ricezione dei risultati) attraverso l’utilizzo di _ReactiveX_ (_RxJava_).
+### Versione reattiva
 
-L'architettura è basata su un pattern Model-View-Controller (MVC), che separa la logica 
+L'architettura è basata sul pattern Model-View-Controller (MVC), che separa la logica 
 dell'applicazione dalla presentazione. La parte di analisi delle dipendenze è implementata nella classe 
 `DependencyAnalyser`, che fornisce le funzionalità di analisi, mentre la parte di interfaccia grafica è gestita dalla
 classe `GUI`, realizzata utilizzando la libreria [Swing](https://docs.oracle.com/javase/7/docs/api/javax/swing/package-summary.html)
 di Java.
 
-Il progetto utilizza il framework [RxJava](https://github.com/ReactiveX/RxJava) per implementare la programmazione
-reattiva. RxJava è una libreria per la programmazione reattiva in Java, che consente di lavorare con flussi di dati
-asincroni e di gestire eventi in modo reattivo. La libreria fornisce un'implementazione del pattern Observer, che
+Il progetto utilizza il framework [RxJava](https://github.com/ReactiveX/RxJava), libreria per la programmazione reattiva in Java, che consente di lavorare con flussi di dati
+asincroni (come input dell’utente, aggiornamenti dell’interfaccia grafica e ricezione dei risultati) e di gestire eventi in modo reattivo. La libreria fornisce un'implementazione del pattern Observer, che
 permette di osservare e reagire a eventi o cambiamenti di stato in modo semplice ed efficiente.
+
+All'interno del programma, è implementata una semplice gestione della backpressure, che consente di limitare il numero
+di eventi emessi in un dato momento, evitando sovraccarichi e garantendo una reattività fluida. Questo è realizzato
+tramite la definizione di una dimensione massima per il buffer, che controlla quanti eventi (le classi da analizzare) possono
+essere emessi prima di essere elaborati. In futuro, il progetto potrebbe essere esteso per includere una gestione
+più avanzata della backpressure, ad esempio gestendo la frequenza di emissione degli eventi.
 
 <div align="center">
 	<img src="./images/project-gui.png" alt="Rappresentazione dell'interfaccia grafica del sistema reattivo." width="700"/>
@@ -84,14 +84,9 @@ La GUI è progettata per essere reattiva, consentendo all'utente di selezionare 
 dipendenze in modo dinamico, man mano che le varie classi vengono analizzate. La disposizione dei nodi nel grafo 
 è gestita raggruppando le classi in package, in modo da rendere più chiara la visualizzazione delle dipendenze.
 
-All'interno del programma, è implementata una semplice gestione della backpressure, che consente di limitare il numero
-di eventi emessi in un dato momento, evitando sovraccarichi e garantendo una reattività fluida. Questo è realizzato
-tramite la definizione di una dimensione massima per il buffer degli eventi, che controlla quanti eventi possono
-essere emessi prima di essere elaborati. In futuro, il progetto potrebbe essere esteso per includere una gestione
-più avanzata della backpressure, ad esempio gestendo la frequenza di emissione degli eventi.
 
 ## Comportamento del sistema
-### Libreria asincrona
+### Versione asincrona
 <div align="center">
 	<img src="./images/asynch-petri-nets.png" alt="Rete di petri componenti asincrone" width="1000"/>
 </div>
@@ -99,7 +94,7 @@ più avanzata della backpressure, ad esempio gestendo la frequenza di emissione 
 - _n_: numero di classi nel package
 - _m_: numero di package nel progetto
 
-### Programma reattivo
+### Versione reattiva
 <div align="center">
 	<img src="./images/reactive-petri-net.png" alt="Rete di petri programma reattivo" width="400"/>
 </div>
