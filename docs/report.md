@@ -104,7 +104,7 @@ più avanzata della backpressure, ad esempio gestendo la frequenza di emissione 
 
 ### Programma reattivo
 <div align="center">
-	<img src="./images/reactive-petri-net.png" alt="Rete di petri programma reattivo" width="500"/>
+	<img src="./images/reactive-petri-net.png" alt="Rete di petri programma reattivo" width="400"/>
 </div>
 
 - _n_: numero di classi trovate
