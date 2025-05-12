@@ -19,10 +19,7 @@ Terenzi Mirco (1193420; mirco.terenzi@studio.unibo.it)
 Il progetto ha come obiettivo l'analisi delle dipendenze tra classi, interfacce e package in un’applicazione Java, 
 ovvero identificare da quali elementi del codice dipendono le porzioni analizzate.
 
-L’analisi delle dipendenze è un’operazione potenzialmente costosa in termini computazionali, soprattutto su repository di grandi dimensioni.
-La difficoltà non riguarda solo l’analisi dei singoli file, ma anche la combinazione dei risultati in modo coerente.
-
-Per affrontare queste problematiche, lo sviluppo prevede due soluzioni distinte, ciascuna basata su un approccio differente:
+Lo sviluppo prevede due soluzioni distinte, ciascuna basata su un approccio differente:
 
 - **Asincrono**: è richiesta la realizzazione di una libreria in grado di operare a tre diverse profondità: 
 sull’intero progetto, su un singolo package o su una specifica classe, con l’obiettivo di identificare le relative dipendenze. 
